@@ -2268,27 +2268,6 @@
   ]
  },
  {
-  "id": "p1",
-  "no": "P1",
-  "title": "Silver",
-  "gallery": "Illustrated poems",
-  "group": "",
-  "on_site": true,
-  "medium": "Ink and watercolour on paper",
-  "h": 27,
-  "w": 23.5,
-  "year": "",
-  "place": "",
-  "status": "available",
-  "price": null,
-  "text": "",
-  "alt": "Illustrated poem: Walter de la Mare's 'Silver', hand-lettered in a moonlit night sky, framed by small silver animals and birds.",
-  "img": [
-   902,
-   1036
-  ]
- },
- {
   "id": "p2",
   "no": "P2",
   "title": "I expect",
@@ -2307,27 +2286,6 @@
   "img": [
    919,
    1054
-  ]
- },
- {
-  "id": "p4",
-  "no": "P4",
-  "title": "The Listeners",
-  "gallery": "Illustrated poems",
-  "group": "",
-  "on_site": true,
-  "medium": "Ink and watercolour on paper",
-  "h": 26,
-  "w": 22.5,
-  "year": "",
-  "place": "",
-  "status": "available",
-  "price": null,
-  "text": "",
-  "alt": "Illustrated poem: Walter de la Mare's 'The Listeners', hand-lettered beside a grey moonlit scene of a traveller knocking at a door, his horse grazing, with ghostly figures behind.",
-  "img": [
-   948,
-   1100
   ]
  },
  {
