@@ -13,6 +13,13 @@ DRAFT = True  # while True: pages ask search engines not to list them, and draft
 EMAIL = 'enquiries@joanmullinsart.co.uk'
 ETSY = 'https://www.etsy.com/shop/ArtistjoanmullinsCo'
 SITE = 'joanmullinsart.co.uk'
+BASE = 'https://joanmullinsart.co.uk/'
+# Enquiry form. Leave FORM_ENDPOINT empty until a form service is set up (for example Web3Forms:
+# FORM_ENDPOINT = 'https://api.web3forms.com/submit' and FORM_KEY = the access key it emails you).
+# While it is empty, the form opens the visitor's email program with the message filled in,
+# and shows the message and address to copy if nothing opens.
+FORM_ENDPOINT = ''
+FORM_KEY = ''
 
 works = json.load(open(os.path.join(ROOT, 'data', 'works.json')))
 by_id = {w['id']: w for w in works}
@@ -53,11 +60,18 @@ def price_line(w):
     if w['status'] == 'nfs': return 'Not for sale'
     return f"£{w['price']:,}" if w['price'] else 'Price on request'
 
+def price_html(w):
+    """The price for display, with the draft gap shown where Joan hasn't priced an available painting."""
+    t = e(price_line(w))
+    if DRAFT and w['status'] == 'available' and not w['price']:
+        t += ' ' + draft('[Joan to price]')
+    return t
+
 def medium_short(w):
     m = w['medium']
     return m[:1].upper() + m[1:] if m else ''
 
-def page(title, body, current='', desc=''):
+def page(title, body, current='', desc='', image='img/joan.jpg', ld=''):
     nav = [('index.html', 'Home'), ('gallery.html', 'Gallery'), ('about.html', 'About'), ('enquire.html', 'Enquire')]
     links = ''.join(f'<a href="{h}"{" aria-current=\"page\"" if n == current else ""}>{n}</a>' for h, n in nav)
     robots = '<meta name="robots" content="noindex">\n' if DRAFT else ''
@@ -68,7 +82,15 @@ def page(title, body, current='', desc=''):
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc or 'Paintings and drawings by Joan Mullins, painter, Nantwich, Cheshire.')}">
-{robots}<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="canonical" href="{BASE}%%PATH%%">
+<meta property="og:site_name" content="Joan Mullins, painter">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{e(title)}">
+<meta property="og:description" content="{e(desc or 'Paintings and drawings by Joan Mullins, painter, Nantwich, Cheshire.')}">
+<meta property="og:url" content="{BASE}%%PATH%%">
+<meta property="og:image" content="{BASE}{image}">
+<meta name="twitter:card" content="summary_large_image">
+{ld}{robots}<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&amp;family=Spectral:ital,wght@0,400;0,500;1,400&amp;display=swap">
 <link rel="stylesheet" href="style.css">
@@ -93,7 +115,7 @@ def page(title, body, current='', desc=''):
 '''
 
 def card(w, ratio=''):
-    sub = price_line(w)  # the medium is on the painting's own page
+    sub = price_line(w)  # the medium is on the painting's own page; draft gaps are left to the painting's page
     return (f'<a class="card" href="w-{w["id"]}.html" style="--r:{w["img"][0]/w["img"][1]:.3f}">'
             f'<img src="img/t/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" loading="lazy" width="{w["img"][0]}" height="{w["img"][1]}">'
             f'<em class="t">{e(w["title"])}</em><span class="s">{e(sub)}</span></a>')
@@ -125,7 +147,7 @@ def wall_view(w):
     Works on paper are shown in a typical mount and thin black frame (not included unless recorded as framed);
     oils recorded as framed are shown in a plain oak frame; other oils hang bare."""
     if not (w['h'] and w['w']):
-        return ''
+        return '', ''
     paper = 'paper' in w['medium'].lower()
     if paper:
         style, fw, mx, mt, mb = 'mounted', 2.2, 7, 7, 8
@@ -142,15 +164,11 @@ def wall_view(w):
         note = f'Shown in its oak frame. The painting itself is {size(w)}.'
     else:
         note = f'Shown at its real size, {size(w)}.'
-    return f'''<section class="wrap wall-block" aria-labelledby="wall-h">
-<h2 id="wall-h">See it on a wall</h2>
-<div class="wall">
+    return note + ' Above a cabinet about 90 cm wide. The room is an illustration.', f'''<div class="wall">
 <img class="room" src="img/room.jpg" alt="" width="1037" height="1517" loading="lazy">
 <div class="hang {style}" style="--tw:{tw:g};--th:{th:g};--fw:{fw:g};--mx:{mx:g};--mt:{mt:g};--mb:{mb:g}">
 <img src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall above a cabinet" loading="lazy"></div>
-</div>
-<p class="small">{e(note)} Above a cabinet about 90 cm wide. The room is an illustration.</p>
-</section>'''
+</div>'''
 
 pages = {}
 
@@ -167,7 +185,7 @@ home.append(f'''<section class="wrap intro">
 <p class="lede">Paintings and drawings, {draft("[earliest surviving year]")} to now</p>
 <p>Over more than sixty years, Joan Mullins has worked across a remarkable range of subjects and styles, from closely observed landscapes and botanical studies to intricate compositions drawn entirely from imagination. These galleries bring together the different strands of a lifetime’s painting.</p>
 </section>
-<section class="wrap block"><h2 class="eyebrow">The galleries</h2>{tiles()}</section>
+<section class="wrap block"><h2 class="eyebrow">The galleries</h2>{tiles()}<p class="after-tiles"><a href="for-sale.html">See all {len([w for w in works if w['on_site'] and w['status'] == 'available'])} paintings for sale</a></p></section>
 <section class="band"><div class="wrap about-strip">
 <img src="img/joan.jpg" alt="Joan Mullins smiling, in a coral cardigan and patterned scarf, with her paintings on the wall behind her">
 <div class="copy"><h2>About Joan</h2>
@@ -176,34 +194,40 @@ home.append(f'''<section class="wrap intro">
 <a href="about.html">Read her story</a></div></div></section>
 <section class="wrap ask"><h2>Ask about a painting</h2>
 <p>Prices are shown with each painting. To buy one or arrange to see it, get in touch with Joan.</p>
-<a class="button" href="enquire.html">Enquire</a></section>''')
+<p class="ask-links"><a class="button" href="enquire.html">Enquire</a> <a href="enquire.html#buying">How buying works</a></p></section>''')
 pages['index.html'] = page('Joan Mullins, painter, Nantwich, Cheshire', '\n'.join(home), 'Home')
 
 # ---------- Gallery index ----------
 pages['gallery.html'] = page('Gallery · Joan Mullins', f'''<section class="wrap block">
 <h1>Gallery</h1>
 <p class="lead">{len([w for w in works if w["on_site"]])} paintings and drawings in seven galleries, with a section for work that has sold.</p>
-{tiles()}</section>''', 'Gallery')
+{tiles()}<p class="after-tiles"><a href="for-sale.html">See all {len([w for w in works if w['on_site'] and w['status'] == 'available'])} paintings for sale</a></p></section>''', 'Gallery')
 
 # ---------- Exhibition layout: one painting per row, its details beside it ----------
 gslug = lambda g: re.sub('[^a-z]+', '-', g.lower()).strip('-')
 
 def ask_link(w):
-    subj = f"Enquiry: {w['title']} (No. {w['no']})"
-    return f'<a href="mailto:{EMAIL}?subject={quote(subj)}">Ask about this painting</a>'
+    return f'<a href="enquire.html#w-{w["id"]}">Ask about this painting</a>'
+
+def details(w):
+    rows = [('Medium', e(medium_short(w))), ('Size', e(size(w))), ('Year', e(w['year'])), ('Inspired by', e(w['place'])),
+            ('Price', price_html(w)), ('Catalogue no.', e(w['no']))]
+    return ''.join(f'<dt>{k}</dt><dd>{v}</dd>' for k, v in rows if v)
 
 def exhibit(w):
-    rows = [('Medium', medium_short(w)), ('Size', size(w)), ('Year', w['year']), ('Inspired by', w['place']), ('Price', price_line(w))]
-    dl = ''.join(f'<dt>{k}</dt><dd>{e(v)}</dd>' for k, v in rows if v)
+    dl = details(w)
     text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip())
     links = [f'<a href="w-{w["id"]}.html">See it larger</a>'] + ([ask_link(w)] if w['status'] == 'available' else [])
-    return (f'<article class="ex"><a class="ex-pic" href="w-{w["id"]}.html">'
+    return (f'<article class="ex" data-status="{w["status"]}"><a class="ex-pic" href="w-{w["id"]}.html">'
             f'<img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" loading="lazy" width="{w["img"][0]}" height="{w["img"][1]}"></a>'
-            f'<div class="ex-info"><div><h2><a href="w-{w["id"]}.html">{e(w["title"])}</a></h2><span class="no">No. {e(w["no"])}</span></div>'
+            f'<div class="ex-info"><h2><a href="w-{w["id"]}.html">{e(w["title"])}</a></h2>'
             f'<dl>{dl}</dl>{text}<p class="ex-links">{" · ".join(links)}</p></div></article>')
 
-def exhibition(ws):
-    return '<div class="exhibition">' + ''.join(exhibit(w) for w in ws) + '</div>'
+def exhibition(ws, switch=True):
+    n = sum(w['status'] == 'available' for w in ws)
+    sw = (f'<p class="forsale-switch"><label><input type="checkbox" class="only-sale"> Show only paintings for sale ({n} of {len(ws)})</label></p>'
+          if switch and 0 < n < len(ws) else '')
+    return sw + '<div class="exhibition">' + ''.join(exhibit(w) for w in ws) + '</div>'
 
 def group_tile_pick(ws):
     """A clear, roughly landscape-shaped picture for a group's tile, preferring one that's for sale."""
@@ -251,46 +275,88 @@ sold = sorted([w for w in works if w['status'] == 'sold'], key=sort_key)
 pages['sold.html'] = page('Sold · Joan Mullins', f'''<section class="wrap block">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › Sold</nav>
 <h1>Sold</h1><p class="lead">Paintings that have found homes.</p>
-{exhibition(sold)}</section>''', 'Gallery')
+{exhibition(sold, False)}</section>''', 'Gallery')
 pages['new.html'] = page('New paintings · Joan Mullins', f'''<section class="wrap block">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › New paintings</nav>
 <h1>New paintings</h1><p class="lead">Finished in the last twelve months. {draft("[Draft: shows every painting dated 2026 until months are recorded]")}</p>
 {exhibition(new)}</section>''', 'Gallery')
 
+# ---------- Paintings for sale ----------
+fs = []
+for slug, name, *_ in GALLERIES:
+    ws = [w for w in gallery_works(name) if w['status'] == 'available']
+    if ws:
+        fs.append(f'<h2 class="group" id="{slug}">{e(name)} <span class="count">{len(ws)}</span></h2><div class="grid">' + ''.join(card(w) for w in ws) + '</div>')
+pages['for-sale.html'] = page('Paintings for sale · Joan Mullins', f'''<section class="wrap block">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › Paintings for sale</nav>
+<h1>Paintings for sale</h1><p class="lead">Every painting Joan has for sale, gallery by gallery. Select one to see its size, price and how it looks on a wall. <a href="enquire.html#buying">How buying works</a></p>
+{"".join(fs)}</section>''', 'Gallery', 'Original paintings for sale by Joan Mullins, painter, Nantwich, Cheshire.')
+
 # ---------- Work pages ----------
+def artwork_ld(w):
+    d = {'@context': 'https://schema.org', '@type': 'VisualArtwork', 'name': w['title'],
+         'creator': {'@type': 'Person', 'name': 'Joan Mullins', 'jobTitle': 'Painter', 'address': {'@type': 'PostalAddress', 'addressLocality': 'Nantwich', 'addressRegion': 'Cheshire', 'addressCountry': 'GB'}},
+         'artMedium': w['medium'], 'image': BASE + f'img/w/{w["id"]}.jpg', 'url': BASE + f'w-{w["id"]}.html'}
+    if w['h'] and w['w']:
+        d['height'] = {'@type': 'Distance', 'name': f"{w['h']} cm"}; d['width'] = {'@type': 'Distance', 'name': f"{w['w']} cm"}
+    if re.fullmatch(r'\d{4}', w['year'] or ''):
+        d['dateCreated'] = w['year']
+    if w['text']:
+        d['description'] = w['text']
+    if w['status'] == 'available' and w['price']:
+        d['offers'] = {'@type': 'Offer', 'price': w['price'], 'priceCurrency': 'GBP', 'availability': 'https://schema.org/InStock',
+                       'areaServed': 'GB', 'url': BASE + f'w-{w["id"]}.html'}
+    return '<script type="application/ld+json">' + json.dumps(d, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
+
 for w in works:
     g = GAL.get(w['gallery'])
     gname = 'Sold' if (not w['on_site'] and w['status'] == 'sold') else w['gallery']
     ghref = 'sold.html' if gname == 'Sold' else f'g-{g[0]}.html'
     grp_page = GROUP_PAGE.get((w['gallery'], w['group'])) if gname != 'Sold' else None
-    rows = [('Medium', medium_short(w)), ('Size', size(w)), ('Year', w['year']), ('Inspired by', w['place']), ('Price', price_line(w))]
-    dl = ''.join(f'<dt>{k}</dt><dd>{e(v)}</dd>' for k, v in rows if v)
     text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip()) if w['text'] else (
         f'<p>{draft("[A few lines from Joan about this painting]")}</p>' if w['on_site'] else '')
     if w['status'] == 'available':
-        subj = f"Enquiry: {w['title']} (No. {w['no']})"
-        ask = (f'<a class="button" href="mailto:{EMAIL}?subject={quote(subj)}">Ask about this painting</a>'
-               f'<p class="small">Or email <span class="addr">{EMAIL}</span>, quoting No. {e(w["no"])}. UK only. '
-               f'Collection from Nantwich is free; UK postage is quoted when you enquire.</p>')
+        ask = (f'<a class="button" href="enquire.html#w-{w["id"]}">Ask about this painting</a>'
+               f'<p class="small">UK only. Collection from Nantwich is free; UK postage is quoted when you enquire. '
+               f'<a href="enquire.html#buying">How buying works</a></p>')
     else:
         ask = ''
     pool = sold if gname == 'Sold' else [x for x in gallery_works(w['gallery']) if not grp_page or x['group'] == w['group']]
-    others = [x for x in pool if x['id'] != w['id']]
     i = next((k for k, x in enumerate(pool) if x['id'] == w['id']), 0)
+    others = [x for x in pool if x['id'] != w['id']]
     more = (others[i:] + others[:i])[:3]
+    prev_w, next_w = (pool[i - 1] if len(pool) > 1 else None), (pool[(i + 1) % len(pool)] if len(pool) > 1 else None)
+    here_name, here_href = (w['group'], grp_page) if grp_page else (gname, ghref)
+    pn = ''
+    if prev_w:
+        pn = (f'<nav class="wrap prevnext" aria-label="More in {e(here_name)}">'
+              f'<a class="prev" href="w-{prev_w["id"]}.html"><span>Previous</span><em>{e(prev_w["title"])}</em></a>'
+              f'<a class="up" href="{here_href}">All of {e(here_name)} ({len(pool)})</a>'
+              f'<a class="next" href="w-{next_w["id"]}.html"><span>Next</span><em>{e(next_w["title"])}</em></a></nav>')
+    wall_note, wall = wall_view(w)
+    views = ''
+    if wall:
+        views = (f'<div class="views" role="group" aria-label="Choose a view">'
+                 f'<button type="button" class="view-btn" data-view="painting" aria-pressed="true"><img src="img/t/{w["id"]}.jpg" alt="">The painting</button>'
+                 f'<button type="button" class="view-btn" data-view="wall" aria-pressed="false"><img src="img/room-thumb.jpg" alt="">On a wall</button></div>')
     body = f'''<nav class="wrap crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › <a href="{ghref}">{e(gname)}</a> › {f'<a href="{grp_page}">{e(w["group"])}</a> › ' if grp_page else ''}{e(w["title"])}</nav>
 <article class="wrap work">
-<figure style="--r:{w["img"][0]/w["img"][1]:.3f}"><a href="img/w/{w["id"]}.jpg" data-zoom><img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" width="{w["img"][0]}" height="{w["img"][1]}"></a>
-<figcaption>Select the picture to see it larger</figcaption></figure>
+<figure class="viewer" style="--r:{w["img"][0]/w["img"][1]:.3f}">
+<div class="pane" data-pane="painting"><a href="img/w/{w["id"]}.jpg" data-zoom><img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" width="{w["img"][0]}" height="{w["img"][1]}"></a>
+<p class="pane-note">Select the picture to see it larger.</p></div>
+{f'<div class="pane" data-pane="wall"><h2 class="pane-title">On a wall</h2>{wall}<p class="pane-note">{e(wall_note)}</p></div>' if wall else ''}
+{views}
+</figure>
 <dialog id="zoom" class="zoom" aria-label="{e(w["title"])}, larger"><button type="button" class="zoom-close" aria-label="Close the larger picture"><span aria-hidden="true">×</span><span class="zoom-label">Close</span></button><img alt=""></dialog>
-<div class="info"><div><h1>{e(w["title"])}</h1><span class="no">No. {e(w["no"])}</span></div>
-<dl>{dl}</dl>{text}{ask}</div>
+<div class="info"><h1>{e(w["title"])}</h1>
+<dl>{details(w)}</dl>{text}{ask}</div>
 </article>
-{wall_view(w)}
-<section class="band"><div class="wrap block"><h2>More from {e(w["group"] if grp_page else gname)}</h2>
+{pn}
+<section class="band"><div class="wrap block"><h2>More from {e(here_name)}</h2>
 <div class="grid three">{"".join(card(x) for x in more)}</div></div></section>'''
     pages[f'w-{w["id"]}.html'] = page(f'{w["title"]} · Joan Mullins', body, 'Gallery',
-                                      f'{w["title"]}, {w["medium"].lower()}, by Joan Mullins, painter, Nantwich, Cheshire.')
+                                      f'{w["title"]}, {w["medium"].lower()}, by Joan Mullins, painter, Nantwich, Cheshire.',
+                                      image=f'img/w/{w["id"]}.jpg', ld=artwork_ld(w))
 
 # ---------- About ----------
 pages['about.html'] = page('About Joan Mullins', f'''<section class="wrap about">
@@ -302,24 +368,60 @@ pages['about.html'] = page('About Joan Mullins', f'''<section class="wrap about"
 <p>Her botanical paintings were made with close attention to botanical detail; she submitted work to the Royal Horticultural Society and showed with the Society of Women Artists at Westminster Hall {draft("[years; member or exhibitor]")}.</p>
 <p>Her imaginative work was shown with the Society for Art of Imagination at the Mall Galleries, London {draft("[years; member or exhibitor; any awards]")}.</p>
 <p>She is still painting. <a href="new.html">See her newest work</a>, or <a href="gallery.html">browse the galleries</a>.</p>
+<h2>Where her work has been shown</h2>
+<ul class="cv">
+<li>Society of Women Artists, Westminster Hall, London {draft("[year or years]")}</li>
+<li>Society for Art of Imagination, Mall Galleries, London {draft("[year or years]")}</li>
+<li>Royal Horticultural Society {draft("[what and when: submissions, shows, any medals]")}</li>
+<li>{draft("[Exhibitions in Cheshire and Hampshire, with years]")}</li>
+<li>Wirral Open Studios, West Kirby, 2024 and 2025</li>
+</ul>
+<h2>Memberships and awards</h2>
+<p>{draft("[Any societies Joan belongs or belonged to, and any awards or prizes]")}</p>
 </div></section>''', 'About', 'About Joan Mullins, painter, born in Bulawayo, living and painting in Nantwich, Cheshire.')
 
 # ---------- Enquire ----------
+for_sale = [w for slug, name, *_ in GALLERIES for w in gallery_works(name) if w['status'] == 'available']
+options = ''.join(f'<option value="w-{w["id"]}">{e(w["title"])} (No. {e(w["no"])}, {e(price_line(w))})</option>' for w in for_sale)
+form_attrs = f'action="{e(FORM_ENDPOINT)}" method="post"' if FORM_ENDPOINT else 'action="#" method="post" data-mailto="' + EMAIL + '"'
+key_field = f'<input type="hidden" name="access_key" value="{e(FORM_KEY)}"><input type="hidden" name="subject" value="Enquiry from joanmullinsart.co.uk">' if FORM_ENDPOINT and FORM_KEY else ''
+form_gap = '' if FORM_ENDPOINT else f'<p class="small">{draft("[Draft: until a form service is set up, sending opens your email program with the message filled in]")}</p>'
 pages['enquire.html'] = page('Enquire · Joan Mullins', f'''<section class="wrap enquire">
 <h1>Ask about a painting</h1>
-<p class="lead">To buy a painting, ask a question or arrange to see a painting, email Joan. Please give the painting’s name or number.</p>
-<p class="addrline"><span class="addr">{EMAIL}</span></p>
-<a class="button" href="mailto:{EMAIL}?subject=Enquiry">Email Joan</a>
-<h2>Buying a painting</h2>
-<ul>
-<li>Prices are shown with each painting that is for sale.</li>
-<li>Collection from Nantwich is free. UK postage is extra, and Joan will tell you the cost when you enquire.</li>
-<li>Joan sells to buyers in the UK only.</li>
-</ul>
+<p class="lead">To buy a painting, ask a question or arrange to see one, send Joan a message. She replies personally.</p>
+<form class="enq" id="enq" {form_attrs}>
+{key_field}
+<label for="f-painting">Which painting?</label>
+<select id="f-painting" name="painting"><option value="">A general question</option>{options}</select>
+<label for="f-name">Your name</label>
+<input id="f-name" name="name" autocomplete="name" required>
+<label for="f-email">Your email address</label>
+<input id="f-email" name="email" type="email" autocomplete="email" required>
+<label for="f-message">Your message</label>
+<textarea id="f-message" name="message" rows="6" required placeholder="For example: is it still available, could I come and see it, what would postage to my town cost?"></textarea>
+<button class="button" type="submit">Send to Joan</button>
+{form_gap}
+<div class="enq-fallback" id="enq-fallback" hidden>
+<p>If your email program didn’t open, copy this message and send it to <span class="addr">{EMAIL}</span>:</p>
+<textarea id="enq-copy" rows="7" readonly></textarea>
+<button type="button" class="button-quiet" id="enq-copy-btn">Copy the message</button>
+</div>
+</form>
+<p class="small">Or email Joan directly: <span class="addr">{EMAIL}</span></p>
+
+<h2 id="buying">How buying works</h2>
+<ol class="steps">
+<li><b>Ask.</b> Send a message about the painting you like. Joan will confirm it’s still available, and tell you the postage cost if you’d like it sent.</li>
+<li><b>Agree.</b> Joan emails you the details: the price, postage or collection, and how to pay.</li>
+<li><b>Pay.</b> By bank transfer, or in cash if you collect. Joan sends or hands over the painting once the payment has arrived. {draft('[Joan to confirm how she takes payment]')}</li>
+<li><b>Receive it.</b> Collect it from Nantwich, or Joan posts it within the UK, well packed and by a tracked, insured service.</li>
+<li><b>Change your mind?</b> If it was posted to you, you can return it within 14 days of it arriving for a full refund. Joan’s email confirming the sale explains how.</li>
+</ol>
+<p>Every painting is an original by Joan. Works on paper are sold unframed unless the painting’s page says otherwise. {draft("[Framing available on request? Joan to say]")}</p>
 <h2>Cards and prints</h2>
 <p>Cards and prints of Joan’s work are sold through her <a href="{ETSY}">Etsy shop</a>.</p>
 <h2>Your details</h2>
-<p>Your email is used only to reply to your enquiry and arrange any sale. It is not shared. This website uses no cookies or tracking.</p>
+<p>Your name and email are used only to reply to your enquiry and arrange any sale. They are not shared. This website uses no cookies or tracking.</p>
 <p class="small">Joan Mullins, Nantwich, Cheshire.</p>
 </section>''', 'Enquire', 'Ask Joan Mullins about buying a painting. Collection from Nantwich, Cheshire, or UK postage.')
 
@@ -327,5 +429,9 @@ pages['404.html'] = page('Page not found · Joan Mullins', '''<section class="wr
 <p>That page isn’t here. Try the <a href="gallery.html">gallery</a> or the <a href="index.html">home page</a>.</p></section>''')
 
 for name, s in pages.items():
-    open(os.path.join(ROOT, name), 'w').write(s)
+    path = '' if name == 'index.html' else name
+    open(os.path.join(ROOT, name), 'w').write(s.replace('%%PATH%%', path))
+urls = ''.join(f'<url><loc>{BASE}{"" if n == "index.html" else n}</loc></url>' for n in pages if n != '404.html')
+open(os.path.join(ROOT, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls + '</urlset>\n')
+open(os.path.join(ROOT, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\nSitemap: {BASE}sitemap.xml\n')
 print(len(pages), 'pages written')
