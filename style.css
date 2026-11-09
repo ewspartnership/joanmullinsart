@@ -157,3 +157,14 @@ p { margin: 0; }
 .wall .hung { position: absolute; width: calc(var(--w) * 4.8 * 100cqw / 1536); height: calc(var(--h) * 4.8 * 100cqw / 1536); object-fit: fill;
   left: calc((600 - var(--w) * 2.4) * 100cqw / 1536); bottom: calc((166 + (122 - var(--h) / 2) * 4.8) * 100cqw / 1536);
   box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 8px 22px rgba(40,32,25,.16); }
+
+/* Larger picture, shown over the page */
+.zoom { border: 0; padding: 0; margin: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; background: transparent; }
+.zoom::backdrop { background: rgba(20, 20, 18, 0.92); }
+.zoom[open] { display: flex; align-items: center; justify-content: center; }
+.zoom img { max-width: calc(100vw - 32px); max-height: calc(100vh - 120px); width: auto; height: auto; cursor: zoom-out; box-shadow: 0 8px 40px rgba(0, 0, 0, .5); }
+.zoom-close { position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: inline-flex; align-items: center; gap: 8px;
+  min-height: 48px; padding: 6px 18px 6px 14px; border: 0; border-radius: 999px; background: var(--wall); color: var(--ink); font: 500 16px/1 var(--sans); cursor: pointer; }
+.zoom-close span[aria-hidden] { font-size: 28px; line-height: 1; }
+.zoom-close:focus-visible { outline: 3px solid #FFFFFF; outline-offset: 3px; }
+.work figure a[data-zoom] { cursor: zoom-in; display: block; }

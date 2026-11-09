@@ -87,6 +87,7 @@ def page(title, body, current='', desc=''):
 <a href="mailto:{EMAIL}">{EMAIL}</a>
 <a href="{ETSY}">Cards and prints on Etsy</a>
 </div></footer>
+<script src="site.js"></script>
 </body>
 </html>
 '''
@@ -259,8 +260,9 @@ for w in works:
     more = (others[i:] + others[:i])[:3]
     body = f'''<nav class="wrap crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › <a href="{ghref}">{e(gname)}</a> › {f'<a href="{grp_page}">{e(w["group"])}</a> › ' if grp_page else ''}{e(w["title"])}</nav>
 <article class="wrap work">
-<figure style="--r:{w["img"][0]/w["img"][1]:.3f}"><a href="img/w/{w["id"]}.jpg"><img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" width="{w["img"][0]}" height="{w["img"][1]}"></a>
+<figure style="--r:{w["img"][0]/w["img"][1]:.3f}"><a href="img/w/{w["id"]}.jpg" data-zoom><img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" width="{w["img"][0]}" height="{w["img"][1]}"></a>
 <figcaption>Select the picture to see it larger</figcaption></figure>
+<dialog id="zoom" class="zoom" aria-label="{e(w["title"])}, larger"><button type="button" class="zoom-close" aria-label="Close the larger picture"><span aria-hidden="true">×</span><span class="zoom-label">Close</span></button><img alt=""></dialog>
 <div class="info"><div><h1>{e(w["title"])}</h1><span class="no">No. {e(w["no"])}</span></div>
 <dl>{dl}</dl>{text}{ask}</div>
 </article>
