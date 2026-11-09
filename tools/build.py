@@ -148,26 +148,65 @@ pages['gallery.html'] = page('Gallery · Joan Mullins', f'''<section class="wrap
 <p class="lead">{len([w for w in works if w["on_site"]])} paintings and drawings in seven galleries, with a section for work that has sold.</p>
 {tiles()}</section>''', 'Gallery')
 
-# ---------- Each gallery ----------
-for slug, name, tid, line, intro, groups in GALLERIES:
+# ---------- Exhibition layout: one painting per row, its details beside it ----------
+gslug = lambda g: re.sub('[^a-z]+', '-', g.lower()).strip('-')
+
+def ask_link(w):
+    subj = f"Enquiry: {w['title']} (No. {w['no']})"
+    return f'<a href="mailto:{EMAIL}?subject={quote(subj)}">Ask about this painting</a>'
+
+def exhibit(w):
+    rows = [('Medium', medium_short(w)), ('Size', size(w)), ('Year', w['year']), ('Inspired by', w['place']), ('Price', price_line(w))]
+    dl = ''.join(f'<dt>{k}</dt><dd>{e(v)}</dd>' for k, v in rows if v)
+    text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip())
+    links = [f'<a href="w-{w["id"]}.html">See it larger</a>'] + ([ask_link(w)] if w['status'] == 'available' else [])
+    return (f'<article class="ex"><a class="ex-pic" href="w-{w["id"]}.html">'
+            f'<img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" loading="lazy" width="{w["img"][0]}" height="{w["img"][1]}"></a>'
+            f'<div class="ex-info"><div><h2><a href="w-{w["id"]}.html">{e(w["title"])}</a></h2><span class="no">No. {e(w["no"])}</span></div>'
+            f'<dl>{dl}</dl>{text}<p class="ex-links">{" · ".join(links)}</p></div></article>')
+
+def exhibition(ws):
+    return '<div class="exhibition">' + ''.join(exhibit(w) for w in ws) + '</div>'
+
+def group_tile_pick(ws):
+    """A clear, roughly landscape-shaped picture for a group's tile, preferring one that's for sale."""
+    good = [w for w in ws if 0.9 <= w['img'][0] / w['img'][1] <= 1.6]
+    for pool in ([w for w in good if w['status'] == 'available'], good, ws):
+        if pool: return pool[0]
+
+def gallery_works(name):
     ws = sorted(on_site(name), key=sort_key)
     if name == 'Sea imaginings':
         ws.sort(key=lambda w: 0 if 'shell' in w['title'].lower() else 1)
-    body = [f'<section class="wrap block"><nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › {e(name)}</nav>',
-            f'<h1>{e(name)}</h1><p class="lead">{e(intro)} <span class="dates">{draft(e(line))}</span></p>']
+    return ws
+
+GROUP_PAGE = {}   # (gallery, group) -> page name
+for slug, name, tid, line, intro, groups in GALLERIES:
+    ws = gallery_works(name)
     present = [g for g in groups if any(w['group'] == g for w in ws)]
+    head = (f'<section class="wrap block"><nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › {e(name)}</nav>'
+            f'<h1>{e(name)}</h1><p class="lead">{e(intro)} <span class="dates">{draft(e(line))}</span></p>')
     if len(present) > 1:
-        body.append('<nav class="jump" aria-label="Groups in this gallery">' + ''.join(
-            f'<a href="#{re.sub("[^a-z]+", "-", g.lower())}">{e(g)}</a>' for g in present) + '</nav>')
+        # Big gallery: its groups as tiles, each group on its own page
+        out = []
         for g in present:
-            body.append(f'<h2 class="group" id="{re.sub("[^a-z]+", "-", g.lower())}">{e(g)}</h2>')
-            body.append('<div class="grid">' + ''.join(card(w) for w in ws if w['group'] == g) + '</div>')
-        rest = [w for w in ws if w['group'] not in present]
-        if rest: body.append('<div class="grid">' + ''.join(card(w) for w in rest) + '</div>')
+            gw = [w for w in ws if w['group'] == g]
+            pg = f'g-{slug}-{gslug(g)}.html'; GROUP_PAGE[(name, g)] = pg
+            t = group_tile_pick(gw)
+            n = len(gw)
+            out.append(f'<a class="tile" href="{pg}"><img src="img/t/{t["id"]}.jpg" alt="{e(t["alt"])}" loading="lazy">'
+                       f'<span class="tn">{e(g)}</span><span class="ts">{n} painting{"s" if n != 1 else ""}</span></a>')
+            others = ''.join(f'<a href="g-{slug}-{gslug(o)}.html">{e(o)}</a>' for o in present if o != g)
+            pages[pg] = page(f'{g} · {name} · Joan Mullins', f'''<section class="wrap block">
+<nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › <a href="g-{slug}.html">{e(name)}</a> › {e(g)}</nav>
+<h1>{e(g)}</h1><p class="lead">{e(name)} · {n} painting{"s" if n != 1 else ""}</p>
+{exhibition(gw)}
+<nav class="jump more-groups" aria-label="Other groups in {e(name)}"><span>More {e(name.lower())}:</span>{others}</nav>
+</section>''', 'Gallery', f'{g}: {name.lower()} by Joan Mullins, painter, Nantwich, Cheshire.')
+        body = head + '<div class="tiles">' + ''.join(out) + '</div></section>'
     else:
-        body.append('<div class="grid">' + ''.join(card(w) for w in ws) + '</div>')
-    body.append('</section>')
-    pages[f'g-{slug}.html'] = page(f'{name} · Joan Mullins', '\n'.join(body), 'Gallery',
+        body = head + exhibition(ws) + '</section>'
+    pages[f'g-{slug}.html'] = page(f'{name} · Joan Mullins', body, 'Gallery',
                                    f'{name} by Joan Mullins, painter, Nantwich, Cheshire. {intro}')
 
 # ---------- Sold and new ----------
@@ -175,17 +214,18 @@ sold = sorted([w for w in works if w['status'] == 'sold'], key=sort_key)
 pages['sold.html'] = page('Sold · Joan Mullins', f'''<section class="wrap block">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › Sold</nav>
 <h1>Sold</h1><p class="lead">Paintings that have found homes.</p>
-<div class="grid">{"".join(card(w) for w in sold)}</div></section>''', 'Gallery')
+{exhibition(sold)}</section>''', 'Gallery')
 pages['new.html'] = page('New paintings · Joan Mullins', f'''<section class="wrap block">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › New paintings</nav>
 <h1>New paintings</h1><p class="lead">Finished in the last twelve months. {draft("[Draft: shows every painting dated 2026 until months are recorded]")}</p>
-<div class="grid">{"".join(card(w) for w in new)}</div></section>''', 'Gallery')
+{exhibition(new)}</section>''', 'Gallery')
 
 # ---------- Work pages ----------
 for w in works:
     g = GAL.get(w['gallery'])
     gname = 'Sold' if (not w['on_site'] and w['status'] == 'sold') else w['gallery']
     ghref = 'sold.html' if gname == 'Sold' else f'g-{g[0]}.html'
+    grp_page = GROUP_PAGE.get((w['gallery'], w['group'])) if gname != 'Sold' else None
     rows = [('Medium', medium_short(w)), ('Size', size(w)), ('Year', w['year']), ('Inspired by', w['place']), ('Price', price_line(w))]
     dl = ''.join(f'<dt>{k}</dt><dd>{e(v)}</dd>' for k, v in rows if v)
     text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip()) if w['text'] else (
@@ -197,18 +237,18 @@ for w in works:
                f'Collection from Nantwich is free; UK postage is quoted when you enquire.</p>')
     else:
         ask = ''
-    pool = sold if gname == 'Sold' else sorted(on_site(w['gallery']), key=sort_key)
+    pool = sold if gname == 'Sold' else [x for x in gallery_works(w['gallery']) if not grp_page or x['group'] == w['group']]
     others = [x for x in pool if x['id'] != w['id']]
     i = next((k for k, x in enumerate(pool) if x['id'] == w['id']), 0)
     more = (others[i:] + others[:i])[:3]
-    body = f'''<nav class="wrap crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › <a href="{ghref}">{e(gname)}</a> › {e(w["title"])}</nav>
+    body = f'''<nav class="wrap crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › <a href="{ghref}">{e(gname)}</a> › {f'<a href="{grp_page}">{e(w["group"])}</a> › ' if grp_page else ''}{e(w["title"])}</nav>
 <article class="wrap work">
 <figure style="--r:{w["img"][0]/w["img"][1]:.3f}"><a href="img/w/{w["id"]}.jpg"><img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" width="{w["img"][0]}" height="{w["img"][1]}"></a>
 <figcaption>Select the picture to see it larger</figcaption></figure>
 <div class="info"><div><h1>{e(w["title"])}</h1><span class="no">No. {e(w["no"])}</span></div>
 <dl>{dl}</dl>{text}{ask}</div>
 </article>
-<section class="band"><div class="wrap block"><h2>More from {e(gname)}</h2>
+<section class="band"><div class="wrap block"><h2>More from {e(w["group"] if grp_page else gname)}</h2>
 <div class="grid three">{"".join(card(x) for x in more)}</div></div></section>'''
     pages[f'w-{w["id"]}.html'] = page(f'{w["title"]} · Joan Mullins', body, 'Gallery',
                                       f'{w["title"]}, {w["medium"].lower()}, by Joan Mullins, painter, Nantwich, Cheshire.')
