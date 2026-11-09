@@ -1,1 +1,19 @@
 # joanmullinsart
+
+The website of Joan Mullins, painter, Nantwich, Cheshire: joanmullinsart.co.uk (not live yet).
+
+It is a plain static site: HTML pages, one stylesheet and the pictures in `img/`. There is no shop or checkout. Each painting that is for sale has an "Ask about this painting" button that opens an email to enquiries@joanmullinsart.co.uk, which forwards to Joan.
+
+## How it is built
+
+- `data/works.json` holds what the site shows about each painting: title, medium, size, year, place, status, price, description and picture description (alt text). The paintings are the ones ticked "On new website" in Joan's catalogue, plus every sold work except The Pink Cat.
+- `tools/build.py` makes every page from that file. Run `python3 tools/build.py` from this folder, then commit.
+- Pictures: `img/w/` (up to 1600 px, for a painting's own page) and `img/t/` (up to 720 px, for the galleries).
+
+## Recording a sale
+
+In `data/works.json`, set the painting's `"status"` to `"sold"` and its `"price"` to `null`, run the build, and commit. The painting then shows as Sold in its gallery and appears in the Sold section.
+
+## Draft
+
+While `DRAFT = True` in `tools/build.py`, every page asks search engines not to list it, and gaps still to fill show in [brackets]. Set it to `False` at launch.
