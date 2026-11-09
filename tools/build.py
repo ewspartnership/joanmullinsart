@@ -122,12 +122,12 @@ def wall_view(w):
         return ''
     return f'''<section class="wrap wall-block" aria-labelledby="wall-h">
 <h2 id="wall-h">See it on a wall</h2>
-<div class="wall" style="--h:{w["h"]};--w:{w["w"]}" role="img" aria-label="{e(w["title"])}, {e(size(w))}, drawn to scale on a wall above a sideboard 110 cm wide">
+<div class="wall" style="--h:{w["h"]};--w:{w["w"]}" role="img" aria-label="{e(w["title"])}, {e(size(w))}, drawn to scale on a wall above a sofa 200 cm wide">
 <img class="hung" src="img/t/{w["id"]}.jpg" alt="">
-<div class="sideboard" aria-hidden="true"><span class="top"></span><span class="body"></span><span class="legs"></span></div>
+<div class="sofa" aria-hidden="true"><span class="back"></span><span class="seat"></span><span class="arm l"></span><span class="arm r"></span><span class="leg l"></span><span class="leg r"></span></div>
 <div class="skirting" aria-hidden="true"></div>
 </div>
-<p class="small">Drawn to scale: the painting is {e(size(w))}{" without its frame" if w.get("framed") == "Y" else ""}, above a sideboard 110 cm wide and 80 cm high.</p>
+<p class="small">Drawn to scale: the painting is {e(size(w))}{" without its frame" if w.get("framed") == "Y" else ""}, above a three-seater sofa 200 cm wide.</p>
 </section>'''
 
 pages = {}
