@@ -117,29 +117,18 @@ def sort_key(w):
 
 
 def wall_view(w):
-    """The painting drawn to scale on a wall above a sideboard, when its size is known."""
+    """The painting at true size on a wall beside an armchair, when its size is known.
+    The room picture (img/room.jpg, 1536 x 1024 px) was made by Steph; at the wall, 4.8 px = 1 cm.
+    The painting is centred 122 cm above the floor (the floor line is at y = 858 px) and 600 px from the left."""
     if not (w['h'] and w['w']):
         return ''
     return f'''<section class="wrap wall-block" aria-labelledby="wall-h">
 <h2 id="wall-h">See it on a wall</h2>
-<div class="wall" style="--h:{w["h"]};--w:{w["w"]}" role="img" aria-label="{e(w["title"])}, {e(size(w))}, drawn to scale on a wall beside an armchair">
-<img class="hung" src="img/t/{w["id"]}.jpg" alt="">
-<svg class="chair" viewBox="0 0 75 100" aria-hidden="true" focusable="false">
-<ellipse cx="38" cy="98.5" rx="34" ry="2.6" fill="rgba(60,50,40,.18)"/>
-<rect x="9" y="84" width="2.6" height="12" fill="#4E3B2C"/><rect x="49" y="86" width="2.4" height="9" fill="#4E3B2C"/>
-<path d="M5 56 L4 22 Q4 13 12 13 L42 17 Q50 18 50 27 L50 60 Z" fill="#7C8981"/>
-<path d="M3 47 Q2 40 9 41 L19 43 Q22 44 22 49 L22 86 L4 82 Z" fill="#84918A"/>
-<path d="M18 54 L50 58 L66 63 L32 59 Z" fill="#A9B3AA"/>
-<path d="M32 59 L66 63 L66 90 L32 88 Z" fill="#97A39A"/>
-<path d="M18 54 L32 59 L32 88 L20 86 Z" fill="#8D998F"/>
-<path d="M50 50 Q51 44 57 45 L68 49 Q72 50.5 72 56 L72 92 L66 91 L66 63 L50 58 Z" fill="#8A968D"/>
-<path d="M66 63 L72 64 L72 92 L66 91 Z" fill="#7A867E"/>
-<path d="M50 50 Q51 44 57 45 L68 49 Q72 50.5 72 56 L66 55 Q66 51 62 50 Z" fill="#9AA59C"/>
-<rect x="33" y="88" width="2.6" height="11" fill="#5B4634"/><rect x="68.5" y="91.5" width="2.6" height="7.5" fill="#5B4634"/>
-</svg>
-<div class="skirting" aria-hidden="true"></div>
+<div class="wall" style="--h:{w["h"]};--w:{w["w"]}">
+<img class="room" src="img/room.jpg" alt="" width="1536" height="1024" loading="lazy">
+<img class="hung" src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall beside an armchair" loading="lazy">
 </div>
-<p class="small">Drawn to scale: the painting is {e(size(w))}{" without its frame" if w.get("framed") == "Y" else ""}, beside an armchair about 90 cm high and 75 cm wide.</p>
+<p class="small">The painting is shown at its real size, {e(size(w))}, beside an armchair about 80 cm high. The room is an illustration.</p>
 </section>'''
 
 pages = {}
