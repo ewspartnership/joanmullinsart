@@ -118,18 +118,38 @@ def sort_key(w):
 
 
 def wall_view(w):
-    """The painting at true size on a wall beside an armchair, when its size is known.
-    The room picture (img/room.jpg, 1536 x 1024 px) was made by Steph; at the wall, 4.8 px = 1 cm.
-    The painting is centred 122 cm above the floor (the floor line is at y = 858 px) and 600 px from the left."""
+    """The painting at true size above a walnut cabinet, when its size is known.
+    The room picture (img/room.jpg, 1037 x 1517 px) was made by Steph and toned down; at the wall 7.6 px = 1 cm.
+    The cabinet (about 90 cm wide, 70 cm high) is centred at x = 516 px with its top at y = 880 px.
+    Each picture hangs centred over it, its lowest edge 20 cm above the top (789 px from the bottom of the picture).
+    Works on paper are shown in a typical mount and thin black frame (not included unless recorded as framed);
+    oils recorded as framed are shown in a plain oak frame; other oils hang bare."""
     if not (w['h'] and w['w']):
         return ''
+    paper = 'paper' in w['medium'].lower()
+    if paper:
+        style, fw, mx, mt, mb = 'mounted', 2.2, 7, 7, 8
+    elif w.get('framed'):
+        style, fw, mx, mt, mb = 'oak', 3, 0, 0, 0
+    else:
+        style, fw, mx, mt, mb = 'bare', 0, 0, 0, 0
+    tw, th = w['w'] + 2 * (fw + mx), w['h'] + 2 * fw + mt + mb
+    if paper and not w.get('framed'):
+        note = f'Shown in a typical mount and frame, which are not included. The painting itself is {size(w)}.'
+    elif paper:
+        note = f'Shown framed. The painting itself is {size(w)}.'
+    elif w.get('framed'):
+        note = f'Shown in its oak frame. The painting itself is {size(w)}.'
+    else:
+        note = f'Shown at its real size, {size(w)}.'
     return f'''<section class="wrap wall-block" aria-labelledby="wall-h">
 <h2 id="wall-h">See it on a wall</h2>
-<div class="wall" style="--h:{w["h"]};--w:{w["w"]}">
-<img class="room" src="img/room.jpg" alt="" width="1536" height="1024" loading="lazy">
-<img class="hung" src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall beside an armchair" loading="lazy">
+<div class="wall">
+<img class="room" src="img/room.jpg" alt="" width="1037" height="1517" loading="lazy">
+<div class="hang {style}" style="--tw:{tw:g};--th:{th:g};--fw:{fw:g};--mx:{mx:g};--mt:{mt:g};--mb:{mb:g}">
+<img src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall above a cabinet" loading="lazy"></div>
 </div>
-<p class="small">The painting is shown at its real size, {e(size(w))}, beside an armchair about 80 cm high. The room is an illustration.</p>
+<p class="small">{e(note)} Above a cabinet about 90 cm wide. The room is an illustration.</p>
 </section>'''
 
 pages = {}
