@@ -150,21 +150,12 @@ p { margin: 0; }
 }
 
 /* See it on a wall: a 240 cm stretch of wall, 190 cm high, drawn to scale (1 cm = 100cqw / 240).
-   The painting hangs about 22 cm above the back of a standard three-seater sofa (200 cm wide, back 85 cm high). */
+   The painting hangs with its centre at 150 cm, the usual eye level, beside an armchair turned towards it (75 cm wide, about 90 cm high). */
 .wall-block { padding-block: 0 72px; display: flex; flex-direction: column; gap: 16px; }
 .wall { container-type: inline-size; position: relative; width: 100%; max-width: 860px; aspect-ratio: 240 / 190;
   background: linear-gradient(#EEEAE3, #E4DFD7); overflow: hidden; }
 .wall > * { position: absolute; }
 .wall .skirting { left: 0; right: 0; bottom: 0; height: calc(10 * 100cqw / 240); background: #F7F5F1; border-top: 1px solid #D8D2C8; }
-.wall .hung { left: 50%; transform: translateX(-50%); width: calc(var(--w) * 100cqw / 240); height: calc(var(--h) * 100cqw / 240); object-fit: fill;
-  bottom: calc(107 * 100cqw / 240); box-shadow: 0 2px 6px rgba(30,25,20,.25), 0 10px 24px rgba(30,25,20,.12); z-index: 1; }
-.wall .sofa { left: 50%; transform: translateX(-50%); bottom: 0; width: calc(200 * 100cqw / 240); height: calc(85 * 100cqw / 240); z-index: 2; }
-.wall .sofa span { position: absolute; display: block; }
-.wall .sofa .back { left: calc(14 * 100cqw / 240); right: calc(14 * 100cqw / 240); bottom: calc(40 * 100cqw / 240); height: calc(45 * 100cqw / 240); background: #8B978E; border-radius: calc(9 * 100cqw / 240) calc(9 * 100cqw / 240) 0 0; }
-.wall .sofa .seat { left: calc(4 * 100cqw / 240); right: calc(4 * 100cqw / 240); bottom: calc(10 * 100cqw / 240); height: calc(35 * 100cqw / 240); background: #9AA69C; border-radius: calc(4 * 100cqw / 240); }
-.wall .sofa .arm { bottom: calc(10 * 100cqw / 240); width: calc(20 * 100cqw / 240); height: calc(55 * 100cqw / 240); background: #85918A; border-radius: calc(10 * 100cqw / 240) calc(10 * 100cqw / 240) calc(3 * 100cqw / 240) calc(3 * 100cqw / 240); }
-.wall .sofa .arm.l { left: 0; }
-.wall .sofa .arm.r { right: 0; }
-.wall .sofa .leg { bottom: 0; width: calc(4 * 100cqw / 240); height: calc(10 * 100cqw / 240); background: #5B4634; }
-.wall .sofa .leg.l { left: calc(10 * 100cqw / 240); }
-.wall .sofa .leg.r { right: calc(10 * 100cqw / 240); }
+.wall .hung { left: calc((140 - var(--w) / 2) * 100cqw / 240); width: calc(var(--w) * 100cqw / 240); height: calc(var(--h) * 100cqw / 240); object-fit: fill;
+  bottom: calc((150 - var(--h) / 2) * 100cqw / 240); box-shadow: 0 2px 6px rgba(30,25,20,.25), 0 10px 24px rgba(30,25,20,.12); }
+.wall .chair { z-index: 2; left: calc(22 * 100cqw / 240); bottom: 0; width: calc(75 * 100cqw / 240); height: calc(100 * 100cqw / 240); }
