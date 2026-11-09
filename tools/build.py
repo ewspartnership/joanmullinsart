@@ -115,6 +115,21 @@ def sort_key(w):
     n = w['no'].lstrip('P')
     return (0 if w['no'].startswith('P') else 1, int(n) if n.isdigit() else 0)
 
+
+def wall_view(w):
+    """The painting drawn to scale on a wall above a sideboard, when its size is known."""
+    if not (w['h'] and w['w']):
+        return ''
+    return f'''<section class="wrap wall-block" aria-labelledby="wall-h">
+<h2 id="wall-h">See it on a wall</h2>
+<div class="wall" style="--h:{w["h"]};--w:{w["w"]}" role="img" aria-label="{e(w["title"])}, {e(size(w))}, drawn to scale on a wall above a sideboard 110 cm wide">
+<img class="hung" src="img/t/{w["id"]}.jpg" alt="">
+<div class="sideboard" aria-hidden="true"><span class="top"></span><span class="body"></span><span class="legs"></span></div>
+<div class="skirting" aria-hidden="true"></div>
+</div>
+<p class="small">Drawn to scale: the painting is {e(size(w))}{" without its frame" if w.get("framed") == "Y" else ""}, above a sideboard 110 cm wide and 80 cm high.</p>
+</section>'''
+
 pages = {}
 
 # ---------- Home ----------
@@ -248,6 +263,7 @@ for w in works:
 <div class="info"><div><h1>{e(w["title"])}</h1><span class="no">No. {e(w["no"])}</span></div>
 <dl>{dl}</dl>{text}{ask}</div>
 </article>
+{wall_view(w)}
 <section class="band"><div class="wrap block"><h2>More from {e(w["group"] if grp_page else gname)}</h2>
 <div class="grid three">{"".join(card(x) for x in more)}</div></div></section>'''
     pages[f'w-{w["id"]}.html'] = page(f'{w["title"]} · Joan Mullins', body, 'Gallery',
