@@ -9,7 +9,6 @@
   --rule: #E2E0DA;
   --hover: #4A5A55;
   --gap: #8A4B2A;      /* draft gaps, shown in [brackets] */
-  --mat: #F4F3EF;      /* the mount each picture sits on in a gallery */
   --serif: 'Spectral', Georgia, 'Times New Roman', serif;
   --sans: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
   color-scheme: light;
@@ -83,15 +82,17 @@ p { margin: 0; }
 .jump { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-bottom: 8px; font-size: 16px; }
 .jump a { padding-block: 6px; }
 .group { margin-block: 48px 24px; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 48px 32px; align-items: start; }
-.grid.three { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-@media (max-width: 600px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; } }
-.card { text-decoration: none; display: flex; flex-direction: column; gap: 6px; }
-/* Every picture whole, centred in the same square mount, so rows and captions line up */
-.card img { width: 100%; aspect-ratio: 1 / 1; object-fit: contain; background: var(--mat); padding: 9%; margin-bottom: 8px; }
-.band .card img { background: var(--wall); }
-.card .t { font-style: italic; font-size: 19px; line-height: 1.3; }
+/* Galleries: even rows. Every picture whole and uncropped, all pictures in a row the same height,
+   each row filled edge to edge, like a hang along one line. One picture per row on a phone. */
+.grid { display: flex; flex-wrap: wrap; gap: 44px 24px; }
+.grid::after { content: ""; flex: 999 1 0; }
+.card { flex: var(--r, 1) 1 calc(var(--r, 1) * 230px); min-width: 0; text-decoration: none; display: flex; flex-direction: column; gap: 4px; }
+.card img { width: 100%; aspect-ratio: var(--r, 1); object-fit: cover; margin-bottom: 8px; }
+.card .t { font-style: italic; font-size: 18px; line-height: 1.3; }
 .card .s { font-size: 15px; color: var(--label); }
+.grid.three .card { flex-basis: calc(var(--r, 1) * 200px); }
+.grid.three::after { display: none; }
+@media (max-width: 600px) { .grid { gap: 36px 0; } .card, .grid.three .card { flex-basis: 100%; } .grid::after { display: none; } }
 .band .block { padding-block: 64px 80px; }
 .band h2 { margin-bottom: 28px; }
 

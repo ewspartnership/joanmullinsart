@@ -92,8 +92,8 @@ def page(title, body, current='', desc=''):
 '''
 
 def card(w, ratio=''):
-    sub = ' · '.join(x for x in [medium_short(w), price_line(w)] if x)
-    return (f'<a class="card" href="w-{w["id"]}.html">'
+    sub = price_line(w)  # the medium is on the painting's own page
+    return (f'<a class="card" href="w-{w["id"]}.html" style="--r:{w["img"][0]/w["img"][1]:.3f}">'
             f'<img src="img/t/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" loading="lazy" width="{w["img"][0]}" height="{w["img"][1]}">'
             f'<em class="t">{e(w["title"])}</em><span class="s">{e(sub)}</span></a>')
 
