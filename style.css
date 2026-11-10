@@ -234,3 +234,14 @@ p { margin: 0; }
 .steps b { color: var(--ink); font-weight: 600; }
 .cv { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
 .about .copy h2 { font-size: 24px; margin-top: 12px; color: var(--ink); }
+
+/* Share button: looks like a quiet link, never takes you anywhere */
+.share-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; border: 0; background: none; color: var(--label);
+  font: 16px/1.4 var(--sans); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.share-btn:hover { color: var(--ink); }
+.share-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.share-btn svg { flex: none; }
+/* A painting you arrived at from a link is marked briefly */
+.ex { scroll-margin-top: 24px; transition: background-color 1.2s ease; }
+.ex.arrived { background-color: var(--band); }
+@media (prefers-reduced-motion: reduce) { .ex { transition: none; } }

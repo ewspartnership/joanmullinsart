@@ -90,3 +90,45 @@ document.documentElement.classList.add('js');
     } else { copy.select(); }
   });
 })();
+
+// Arriving at one painting (a shared link or a link from elsewhere on the site, e.g. #w-117):
+// scroll to its row once the pictures above have settled, and mark it briefly.
+(function () {
+  var id = (location.hash || '').slice(1);
+  if (!/^w-/.test(id)) return;
+  var row = document.getElementById(id);
+  if (!row || !row.classList.contains('ex')) return;
+  var list = row.closest('.exhibition');
+  var box = list && list.parentNode.querySelector('.only-sale');
+  if (box && box.checked && row.getAttribute('data-status') !== 'available') { box.checked = false; list.classList.remove('only-sale-on'); }
+  var go = function () { row.scrollIntoView({ block: 'start' }); };
+  go();
+  window.addEventListener('load', function () { go(); setTimeout(go, 400); setTimeout(go, 1200); });
+  // stop correcting once the visitor starts scrolling themselves
+  ['wheel', 'touchstart', 'keydown'].forEach(function (t) { window.addEventListener(t, function () { go = function () {}; }, { once: true, passive: true }); });
+  row.classList.add('arrived');
+  setTimeout(function () { row.classList.remove('arrived'); }, 2600);
+})();
+
+// Share button on each painting: the phone's share menu where there is one, otherwise copy the link.
+(function () {
+  document.querySelectorAll('.share-btn').forEach(function (btn) {
+    var label = btn.querySelector('span');
+    function say(text) {
+      label.textContent = text;
+      setTimeout(function () { label.textContent = 'Share'; }, 2200);
+    }
+    btn.addEventListener('click', function () {
+      var url = btn.getAttribute('data-url'), title = btn.getAttribute('data-title');
+      if (navigator.share) {
+        navigator.share({ title: title, url: url }).catch(function () {});
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () { say('Link copied'); }, function () { say(url); });
+      } else {
+        say(url);
+      }
+    });
+  });
+})();

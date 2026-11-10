@@ -116,7 +116,7 @@ def page(title, body, current='', desc='', image='img/joan.jpg', ld=''):
 
 def card(w, ratio=''):
     sub = price_line(w)  # the medium is on the painting's own page; draft gaps are left to the painting's page
-    return (f'<a class="card" href="w-{w["id"]}.html" style="--r:{w["img"][0]/w["img"][1]:.3f}">'
+    return (f'<a class="card" href="{row_href(w)}" style="--r:{w["img"][0]/w["img"][1]:.3f}">'
             f'<img src="img/t/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" loading="lazy" width="{w["img"][0]}" height="{w["img"][1]}">'
             f'<em class="t">{e(w["title"])}</em><span class="s">{e(sub)}</span></a>')
 
@@ -133,6 +133,19 @@ def tiles():
 
 def on_site(g):
     return [w for w in works if w['on_site'] and w['gallery'] == g]
+
+
+gslug = lambda g: re.sub('[^a-z]+', '-', g.lower()).strip('-')
+
+def row_href(w):
+    """The gallery (or group) page and the painting's row on it. Every link to a painting goes here."""
+    if not w['on_site']:
+        return f'sold.html#w-{w["id"]}'
+    slug, name, *_rest, groups = GAL[w['gallery']]
+    present = [g for g in groups if any(x['group'] == g for x in on_site(name))]
+    if len(present) > 1 and w['group'] in present:
+        return f'g-{slug}-{gslug(w["group"])}.html#w-{w["id"]}'
+    return f'g-{slug}.html#w-{w["id"]}'
 
 def sort_key(w):
     n = w['no'].lstrip('P')
@@ -192,8 +205,8 @@ hero = by_id.get('143') or (new[0] if new else None)
 home = []
 if hero:
     home.append(f'''<section class="wrap hero"><figure>
-<a href="w-{hero["id"]}.html"><img src="img/w/{hero["id"]}.jpg" alt="{e(hero["alt"])}" width="{hero["img"][0]}" height="{hero["img"][1]}"></a>
-<figcaption><span>New painting · <a href="w-{hero["id"]}.html"><em>{e(hero["title"])}</em></a>, {e(hero["medium"].lower())}, {e(hero["year"])}</span>
+<a href="{row_href(hero)}"><img src="img/w/{hero["id"]}.jpg" alt="{e(hero["alt"])}" width="{hero["img"][0]}" height="{hero["img"][1]}"></a>
+<figcaption><span>New painting · <a href="{row_href(hero)}"><em>{e(hero["title"])}</em></a>, {e(hero["medium"].lower())}, {e(hero["year"])}</span>
 <a href="new.html">All new paintings</a></figcaption></figure></section>''')
 home.append(f'''<section class="wrap intro">
 <p class="lede">Paintings and drawings, {draft("[earliest surviving year]")} to now</p>
@@ -231,7 +244,10 @@ def details(w):
 def exhibit(w):
     dl = details(w)
     text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip())
-    links = ([ask_link(w)] if w['status'] == 'available' else []) + [f'<a href="w-{w["id"]}.html" class="quiet">Link to share</a>']
+    share = (f'<button type="button" class="share-btn" data-url="{BASE}w-{w["id"]}.html" data-title="{e(w["title"])}, by Joan Mullins">'
+             f'<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+             f'<path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/></svg><span>Share</span></button>')
+    links = ([ask_link(w)] if w['status'] == 'available' else []) + [share]
     wall_note, wall = wall_view(w)
     panes = (f'<div class="pane" data-pane="painting"><a href="img/w/{w["id"]}.jpg" data-zoom title="See it larger">'
              f'<img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" loading="lazy" width="{w["img"][0]}" height="{w["img"][1]}"></a></div>')
@@ -328,47 +344,19 @@ def artwork_ld(w):
     return '<script type="application/ld+json">' + json.dumps(d, ensure_ascii=False).replace('</', '<\\/') + '</script>\n'
 
 for w in works:
-    g = GAL.get(w['gallery'])
-    gname = 'Sold' if (not w['on_site'] and w['status'] == 'sold') else w['gallery']
-    ghref = 'sold.html' if gname == 'Sold' else f'g-{g[0]}.html'
-    grp_page = GROUP_PAGE.get((w['gallery'], w['group'])) if gname != 'Sold' else None
-    text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip()) if w['text'] else (
-        f'<p>{draft("[A few lines from Joan about this painting]")}</p>' if w['on_site'] else '')
-    if w['status'] == 'available':
-        ask = (f'<a class="button" href="enquire.html#w-{w["id"]}">Ask about this painting</a>'
-               f'<p class="small">UK only. Collection from Nantwich is free; UK postage is quoted when you enquire. '
-               f'<a href="enquire.html#buying">How buying works</a></p>')
-    else:
-        ask = ''
-    pool = sold if gname == 'Sold' else [x for x in gallery_works(w['gallery']) if not grp_page or x['group'] == w['group']]
-    i = next((k for k, x in enumerate(pool) if x['id'] == w['id']), 0)
-    others = [x for x in pool if x['id'] != w['id']]
-    more = (others[i:] + others[:i])[:3]
-    prev_w, next_w = (pool[i - 1] if len(pool) > 1 else None), (pool[(i + 1) % len(pool)] if len(pool) > 1 else None)
-    here_name, here_href = (w['group'], grp_page) if grp_page else (gname, ghref)
-    pn = ''
-    if prev_w:
-        pn = (f'<nav class="wrap prevnext" aria-label="More in {e(here_name)}">'
-              f'<a class="prev" href="w-{prev_w["id"]}.html"><span>Previous</span><em>{e(prev_w["title"])}</em></a>'
-              f'<a class="up" href="{here_href}">All of {e(here_name)} ({len(pool)})</a>'
-              f'<a class="next" href="w-{next_w["id"]}.html"><span>Next</span><em>{e(next_w["title"])}</em></a></nav>')
-    wall_note, wall = wall_view(w)
-    views = view_buttons(w) if wall else ''
-    body = f'''<nav class="wrap crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › <a href="{ghref}">{e(gname)}</a> › {f'<a href="{grp_page}">{e(w["group"])}</a> › ' if grp_page else ''}{e(w["title"])}</nav>
+    # A painting's own page is what a shared link or a search result points at. Link previews (WhatsApp,
+    # Facebook) and search engines read its title, picture and details; a person opening it is passed
+    # straight on to the painting's row in its gallery. Without JavaScript the page still shows the painting.
+    target = row_href(w)
+    text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip())
+    ask = f'<a class="button" href="enquire.html#w-{w["id"]}">Ask about this painting</a>' if w['status'] == 'available' else ''
+    body = f'''<script>location.replace({json.dumps(target)});</script>
 <article class="wrap work">
-<figure class="viewer" style="--r:{w["img"][0]/w["img"][1]:.3f}">
-<div class="pane" data-pane="painting"><a href="img/w/{w["id"]}.jpg" data-zoom><img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" width="{w["img"][0]}" height="{w["img"][1]}"></a>
-<p class="pane-note">Select the picture to see it larger.</p></div>
-{f'<div class="pane" data-pane="wall"><h2 class="pane-title">On a wall</h2>{wall}<p class="pane-note">{e(wall_note)}</p></div>' if wall else ''}
-{views}
-</figure>
-{ZOOM}
+<figure><img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" width="{w["img"][0]}" height="{w["img"][1]}"></figure>
 <div class="info"><h1>{e(w["title"])}</h1>
-<dl>{details(w)}</dl>{text}{ask}</div>
-</article>
-{pn}
-<section class="band"><div class="wrap block"><h2>More from {e(here_name)}</h2>
-<div class="grid three">{"".join(card(x) for x in more)}</div></div></section>'''
+<dl>{details(w)}</dl>{text}{ask}
+<p><a href="{target}">See it in the gallery</a></p></div>
+</article>'''
     pages[f'w-{w["id"]}.html'] = page(f'{w["title"]} · Joan Mullins', body, 'Gallery',
                                       f'{w["title"]}, {w["medium"].lower()}, by Joan Mullins, painter, Nantwich, Cheshire.',
                                       image=f'img/w/{w["id"]}.jpg', ld=artwork_ld(w))
