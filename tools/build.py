@@ -263,7 +263,7 @@ def exhibition(ws, switch=True):
           if switch and 0 < n < len(ws) else '')
     return sw + '<div class="exhibition">' + ''.join(exhibit(w) for w in ws) + '</div>' + ZOOM
 
-GROUP_TILES = {'Trees and woodland': '133', 'Sea and shore': '009',
+GROUP_TILES = {'Trees and woodland': '142', 'Sea and shore': '009',
                'Countryside': '179', 'Buildings and old places': '053'}   # chosen by Steph, 10 Nov
 
 def group_tile_pick(ws):
