@@ -132,8 +132,13 @@ p { margin: 0; }
 .exhibition { display: flex; flex-direction: column; }
 .ex { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 32px 56px; align-items: center; padding-block: 56px; border-top: 1px solid var(--rule); }
 .ex:first-child { border-top: 0; padding-top: 8px; }
-.ex-pic { justify-self: center; display: block; }
-.ex-pic img { width: auto; max-width: 100%; max-height: min(70vh, 600px); }
+.ex-pic { justify-self: center; display: block; min-width: 0; width: 100%; }
+.ex-pic .pane[data-pane="painting"] { display: flex; justify-content: center; }
+.ex-pic .pane[data-pane="painting"] img { width: auto; max-width: 100%; max-height: min(70vh, 600px); cursor: zoom-in; }
+.ex-pic .wall { width: min(100%, calc(66vh * 1037 / 1517)); }
+.ex-pic .views { justify-content: center; }
+.ex-pic .pane-note { text-align: center; margin-inline: auto; }
+.ex-links .quiet { color: var(--label); }
 .ex-info { min-width: 0; display: flex; flex-direction: column; gap: 16px; color: var(--ink-soft); max-width: 460px; }
 .ex-info h2 { font-style: italic; font-size: clamp(24px, 2.6vw, 30px); }
 .ex-info h2 a { text-decoration: none; }
@@ -147,7 +152,7 @@ p { margin: 0; }
 @media (max-width: 760px) {
   .ex { grid-template-columns: minmax(0, 1fr); padding-block: 40px; }
   .ex-pic { justify-self: stretch; }
-  .ex-pic img { width: 100%; max-height: none; }
+  .ex-pic .pane[data-pane="painting"] img { width: 100%; max-height: none; }
 }
 
 /* See it on a wall: the picture at true size above a walnut cabinet (room picture 1037 x 1517 px; at the wall 7.6 px = 1 cm).

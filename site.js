@@ -13,18 +13,18 @@ document.documentElement.classList.add('js');
   } catch (e) { /* leave the scroll position alone */ }
 })();
 
-// A painting's page: switch between the painting and the wall view.
+// Switch between the painting and the wall view, on a painting's page and in each gallery row.
 (function () {
-  var viewer = document.querySelector('.viewer');
-  if (!viewer) return;
-  var buttons = viewer.querySelectorAll('.view-btn');
-  if (!buttons.length) return;
-  function show(name) {
-    viewer.querySelectorAll('.pane').forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== name; });
-    buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === name)); });
-  }
-  buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-view')); }); });
-  show('painting');
+  document.querySelectorAll('.viewer').forEach(function (viewer) {
+    var buttons = viewer.querySelectorAll('.view-btn');
+    if (!buttons.length) return;
+    function show(name) {
+      viewer.querySelectorAll('.pane').forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== name; });
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === name)); });
+    }
+    buttons.forEach(function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-view')); }); });
+    show('painting');
+  });
 })();
 
 // Larger picture: opens over the page; closes with Close, Escape, or a tap on the picture or background.

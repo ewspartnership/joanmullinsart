@@ -170,6 +170,14 @@ def wall_view(w):
 <img src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall above a cabinet" loading="lazy"></div>
 </div>'''
 
+ZOOM = ('<dialog id="zoom" class="zoom" aria-label="Larger picture"><button type="button" class="zoom-close" aria-label="Close the larger picture">'
+        '<span aria-hidden="true">×</span><span class="zoom-label">Close</span></button><img alt=""></dialog>')
+
+def view_buttons(w):
+    return (f'<div class="views" role="group" aria-label="Choose a view of {e(w["title"])}">'
+            f'<button type="button" class="view-btn" data-view="painting" aria-pressed="true"><img src="img/t/{w["id"]}.jpg" alt="">The painting</button>'
+            f'<button type="button" class="view-btn" data-view="wall" aria-pressed="false"><img src="img/room-thumb.jpg" alt="">On a wall</button></div>')
+
 pages = {}
 
 # ---------- Home ----------
@@ -217,17 +225,21 @@ def details(w):
 def exhibit(w):
     dl = details(w)
     text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip())
-    links = [f'<a href="w-{w["id"]}.html">See it larger</a>'] + ([ask_link(w)] if w['status'] == 'available' else [])
-    return (f'<article class="ex" data-status="{w["status"]}"><a class="ex-pic" href="w-{w["id"]}.html">'
-            f'<img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" loading="lazy" width="{w["img"][0]}" height="{w["img"][1]}"></a>'
-            f'<div class="ex-info"><h2><a href="w-{w["id"]}.html">{e(w["title"])}</a></h2>'
+    links = ([ask_link(w)] if w['status'] == 'available' else []) + [f'<a href="w-{w["id"]}.html" class="quiet">Link to share</a>']
+    wall_note, wall = wall_view(w)
+    panes = (f'<div class="pane" data-pane="painting"><a href="img/w/{w["id"]}.jpg" data-zoom title="See it larger">'
+             f'<img src="img/w/{w["id"]}.jpg" alt="{e(w["alt"] or w["title"])}" loading="lazy" width="{w["img"][0]}" height="{w["img"][1]}"></a></div>')
+    if wall:
+        panes += f'<div class="pane" data-pane="wall">{wall}<p class="pane-note">{e(wall_note)}</p></div>' + view_buttons(w)
+    return (f'<article class="ex" data-status="{w["status"]}" id="w-{w["id"]}"><div class="ex-pic viewer">{panes}</div>'
+            f'<div class="ex-info"><h2>{e(w["title"])}</h2>'
             f'<dl>{dl}</dl>{text}<p class="ex-links">{" · ".join(links)}</p></div></article>')
 
 def exhibition(ws, switch=True):
     n = sum(w['status'] == 'available' for w in ws)
     sw = (f'<p class="forsale-switch"><label><input type="checkbox" class="only-sale"> Show only paintings for sale ({n} of {len(ws)})</label></p>'
           if switch and 0 < n < len(ws) else '')
-    return sw + '<div class="exhibition">' + ''.join(exhibit(w) for w in ws) + '</div>'
+    return sw + '<div class="exhibition">' + ''.join(exhibit(w) for w in ws) + '</div>' + ZOOM
 
 def group_tile_pick(ws):
     """A clear, roughly landscape-shaped picture for a group's tile, preferring one that's for sale."""
@@ -334,11 +346,7 @@ for w in works:
               f'<a class="up" href="{here_href}">All of {e(here_name)} ({len(pool)})</a>'
               f'<a class="next" href="w-{next_w["id"]}.html"><span>Next</span><em>{e(next_w["title"])}</em></a></nav>')
     wall_note, wall = wall_view(w)
-    views = ''
-    if wall:
-        views = (f'<div class="views" role="group" aria-label="Choose a view">'
-                 f'<button type="button" class="view-btn" data-view="painting" aria-pressed="true"><img src="img/t/{w["id"]}.jpg" alt="">The painting</button>'
-                 f'<button type="button" class="view-btn" data-view="wall" aria-pressed="false"><img src="img/room-thumb.jpg" alt="">On a wall</button></div>')
+    views = view_buttons(w) if wall else ''
     body = f'''<nav class="wrap crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › <a href="{ghref}">{e(gname)}</a> › {f'<a href="{grp_page}">{e(w["group"])}</a> › ' if grp_page else ''}{e(w["title"])}</nav>
 <article class="wrap work">
 <figure class="viewer" style="--r:{w["img"][0]/w["img"][1]:.3f}">
@@ -347,7 +355,7 @@ for w in works:
 {f'<div class="pane" data-pane="wall"><h2 class="pane-title">On a wall</h2>{wall}<p class="pane-note">{e(wall_note)}</p></div>' if wall else ''}
 {views}
 </figure>
-<dialog id="zoom" class="zoom" aria-label="{e(w["title"])}, larger"><button type="button" class="zoom-close" aria-label="Close the larger picture"><span aria-hidden="true">×</span><span class="zoom-label">Close</span></button><img alt=""></dialog>
+{ZOOM}
 <div class="info"><h1>{e(w["title"])}</h1>
 <dl>{details(w)}</dl>{text}{ask}</div>
 </article>
