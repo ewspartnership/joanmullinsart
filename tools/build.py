@@ -158,12 +158,13 @@ ROOMS = {
     # A walnut cabinet about 90 cm wide; the picture hangs centred over it, 20 cm above its top.
     'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1037, rh=1517, s=7.6, cx=516, by=789,
                     where='Above a cabinet about 90 cm wide.'),
-    # A side table about 65 cm across with a lamp, books and a mug, beside a chair; Steph's picture (recoloured by her, 10 Nov),
+    # A side table about 65 cm across with a lamp, books and a mug, beside a chair; Steph's picture (recoloured by her, 10 Nov; wall then matched to soft white and the wood made a richer walnut),
     # cropped from 1024 x 1536 to x 120-1024, y 300-1420. The picture hangs between the lamp and the chair, 25 cm above the table top.
     # A walnut writing desk by a window with a small fern, for the tiniest paintings, hung low enough to look at sitting down.
     # Cropped from 1086 x 1448 to y 150-1215, with the A5 outline ChatGPT drew painted out, the wall matched and the wood calmed.
-    # The outline (14.8 x 21 cm) gives about 13 px = 1 cm. The picture hangs where the outline was, 20 cm above the desk top.
-    'desk': dict(src='img/room-desk.jpg', thumb='img/room-desk-thumb.jpg', rw=1086, rh=1065, s=13.0, cx=542, by=521,
+    # The outline (14.8 x 21 cm) gives about 13 px = 1 cm. The picture hangs centred on the wall between the window and the edge
+    # of the picture (ChatGPT's outline sat too far left), 20 cm above the desk top.
+    'desk': dict(src='img/room-desk.jpg', thumb='img/room-desk-thumb.jpg', rw=1086, rh=1065, s=13.0, cx=616, by=521,
                  where='Above a writing desk, hung to be seen sitting down.'),
     'table': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=904, rh=1120, s=7.6, cx=460, by=618,
                   where='Above a side table about 65 cm across.'),
