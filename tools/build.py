@@ -181,8 +181,8 @@ def hung(w):
     if paper:
         if w['gallery'] == 'Illustrated poems':
             # Measured from Joan's own framing of one of her poems (Steph's photo, 10 Nov): about 1.6 cm of the sheet shows
-            # round the painting, then about 3.5 cm of mount and a 1.9 cm mid-brown wood frame. mx/mt/mb include the sheet.
-            style, fw, mx, mt, mb = 'poem', 1.9, 5.1, 5.3, 5.3
+            # round the painting, then about 3.5 cm of mount and a mid-brown wood frame (measured 1.9 cm; drawn at 1.4 cm, which Steph found less heavy). mx/mt/mb include the sheet.
+            style, fw, mx, mt, mb = 'poem', 1.4, 5.1, 5.3, 5.3
         else:
             # Other works on paper: a typical wide mount and a thin charcoal frame (Steph's choice, 10 Nov).
             style, fw, mx, mt, mb = 'mounted', 1.2, 7, 7, 8
