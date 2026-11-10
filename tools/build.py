@@ -263,8 +263,13 @@ def exhibition(ws, switch=True):
           if switch and 0 < n < len(ws) else '')
     return sw + '<div class="exhibition">' + ''.join(exhibit(w) for w in ws) + '</div>' + ZOOM
 
+GROUP_TILES = {'Trees and woodland': '133', 'Sea and shore': '009',
+               'Countryside': '179', 'Buildings and old places': '053'}   # chosen by Steph, 10 Nov
+
 def group_tile_pick(ws):
     """A clear, roughly landscape-shaped picture for a group's tile, preferring one that's for sale."""
+    chosen = [w for w in ws if w['id'] == GROUP_TILES.get(w['group'])]
+    if chosen: return chosen[0]
     good = [w for w in ws if 0.9 <= w['img'][0] / w['img'][1] <= 1.6]
     for pool in ([w for w in good if w['status'] == 'available'], good, ws):
         if pool: return pool[0]
