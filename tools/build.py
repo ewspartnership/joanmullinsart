@@ -158,10 +158,10 @@ ROOMS = {
     # A walnut cabinet about 90 cm wide; the picture hangs centred over it, 20 cm above its top.
     'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1037, rh=1517, s=7.6, cx=516, by=789,
                     where='Above a cabinet about 90 cm wide.'),
-    # A close view of a small walnut table with a bowl. Its size is taken as 80 cm wide (the bowl about 12 cm across),
-    # which gives 13.5 px = 1 cm at the wall. The table top meets the wall 294 px from the bottom; the picture hangs 20 cm above it.
-    'table': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=1199, rh=1312, s=13.5, cx=640, by=564,
-                  where='Above a small table about 80 cm wide.'),
+    # A side table about 65 cm across with a lamp, books and a mug, beside a chair; Steph's picture (recoloured by her, 10 Nov),
+    # cropped from 1024 x 1536 to x 120-1024, y 300-1420. The picture hangs between the lamp and the chair, 25 cm above the table top.
+    'table': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=904, rh=1120, s=7.6, cx=460, by=618,
+                  where='Above a side table about 65 cm across.'),
 }
 SMALL = 45   # cm: anything no bigger than this as hung (with any mount and frame) goes beside the side table
 
