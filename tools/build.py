@@ -152,7 +152,7 @@ def sort_key(w):
     return (0 if w['no'].startswith('P') else 1, int(n) if n.isdigit() else 0)
 
 
-# Two rooms, both made by Steph in ChatGPT (10 Nov), with the wood calmed and the wall made the same soft white.
+# Three rooms, all made by Steph in ChatGPT (10 Nov), with the wood calmed and the wall made the same soft white.
 # s = px per cm at the wall; cx = the picture's centre, by = its lowest edge, in px from the left and bottom.
 ROOMS = {
     # A walnut cabinet about 90 cm wide; the picture hangs centred over it, 20 cm above its top.
@@ -160,10 +160,16 @@ ROOMS = {
                     where='Above a cabinet about 90 cm wide.'),
     # A side table about 65 cm across with a lamp, books and a mug, beside a chair; Steph's picture (recoloured by her, 10 Nov),
     # cropped from 1024 x 1536 to x 120-1024, y 300-1420. The picture hangs between the lamp and the chair, 25 cm above the table top.
+    # A walnut writing desk by a window, for the tiniest paintings, hung low enough to look at sitting down.
+    # Cropped from 1086 x 1448 to y 150-1215, with the A5 outline ChatGPT drew painted out and the wall made soft white.
+    # The outline (14.8 x 21 cm) gives 14.1 px = 1 cm. The picture hangs over the desk, 20 cm above its top.
+    'desk': dict(src='img/room-desk.jpg', thumb='img/room-desk-thumb.jpg', rw=1086, rh=1065, s=14.1, cx=694, by=542,
+                 where='Above a writing desk, hung to be seen sitting down.'),
     'table': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=904, rh=1120, s=7.6, cx=460, by=618,
                   where='Above a side table about 65 cm across.'),
 }
-SMALL = 45   # cm: anything no bigger than this as hung (with any mount and frame) goes beside the side table
+TINY = 35    # cm: no bigger than this as hung goes above the desk
+SMALL = 45   # cm: no bigger than this as hung (with any mount and frame) goes beside the side table and chair
 
 def hung(w):
     """Style, frame, mount widths and the hung size in cm."""
@@ -186,7 +192,8 @@ def room_for(w):
     if not (w['h'] and w['w']):
         return None
     tw, th = hung(w)[-2:]
-    return ROOMS['table' if max(tw, th) <= SMALL else 'cabinet']
+    big = max(tw, th)
+    return ROOMS['desk' if big <= TINY else 'table' if big <= SMALL else 'cabinet']
 
 def wall_view(w):
     """The painting at true size on a wall, when its size is known: small ones beside a side table, the rest above a cabinet.
