@@ -157,7 +157,7 @@ def sort_key(w):
 ROOMS = {
     # A walnut cabinet about 90 cm wide; the picture hangs centred over it, 20 cm above its top.
     # Steph's second ChatGPT version (10 Nov): the same cabinet and place, one dried stem; wall evened to soft white and the walnut calmed.
-    'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1039, rh=1513, s=7.6, cx=516, by=781,
+    'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1039, rh=1513, s=7.6, cx=516, by=781, mid=50,
                     where='Above a cabinet about 90 cm wide.'),
     # A side table about 65 cm across with a lamp, books and a mug, beside a chair; Steph's picture (recoloured by her, 10 Nov; wall then matched to soft white and the wood made a richer walnut),
     # cropped from 1024 x 1536 to x 120-1024, y 300-1420. The picture hangs between the lamp and the chair, 25 cm above the table top.
@@ -165,11 +165,13 @@ ROOMS = {
     # Cropped from 1086 x 1448 to y 150-1215, with the A5 outline ChatGPT drew painted out, the wall matched and the wood calmed.
     # The outline (14.8 x 21 cm) gives about 13 px = 1 cm. The picture hangs centred on the wall between the window and the edge
     # of the picture (ChatGPT's outline sat too far left), 20 cm above the desk top.
-    'desk': dict(src='img/room-desk.jpg', thumb='img/room-desk-thumb.jpg', rw=1086, rh=1065, s=13.0, cx=616, by=521,
+    'desk': dict(src='img/room-desk.jpg', thumb='img/room-desk-thumb.jpg', rw=1086, rh=1065, s=13.0, cx=616, by=521, mid=38,
                  where='Above a writing desk, hung to be seen sitting down.'),
-    'table': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=904, rh=1120, s=7.6, cx=460, by=618,
+    'table': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=904, rh=1120, s=7.6, cx=460, by=618, mid=45,
                   where='Above a side table about 65 cm across.'),
 }
+# by is the lowest a picture may hang (its bottom edge 20-25 cm above the furniture); mid is where its middle should sit,
+# in cm above the furniture top. Short pictures (most landscape ones) are raised so their middle is at mid, not left low.
 TINY = 35    # cm: no bigger than this as hung goes above the desk
 SMALL = 45   # cm: no bigger than this as hung (with any mount and frame) goes beside the side table and chair
 
@@ -205,6 +207,9 @@ def room_for(w):
     big = max(tw, th)
     return ROOMS['desk' if big <= TINY else 'table' if big <= SMALL else 'cabinet']
 
+def min_gap(r):
+    return {'cabinet': 20, 'desk': 20, 'table': 25}[next(k for k, v in ROOMS.items() if v is r)]
+
 def wall_view(w):
     """The painting at true size on a wall, when its size is known: small ones beside a side table, the rest above a cabinet.
     Works on paper are shown mounted: poems in a frame like Joan's own, others in a typical mount and thin black frame (not included unless recorded as framed);
@@ -214,6 +219,8 @@ def wall_view(w):
         return '', ''
     paper = 'paper' in w['medium'].lower()
     style, fw, mx, mt, mb, tw, th = hung(w)
+    raise_cm = max(0.0, r['mid'] - th / 2 - min_gap(r))
+    by = round(r['by'] + raise_cm * r['s'], 1)
     if paper and not w.get('framed'):
         note = f'Shown in a typical mount and frame, which are not included. The painting itself is {size(w)}.'
     elif paper:
@@ -224,7 +231,7 @@ def wall_view(w):
         note = f'Shown at its real size, {size(w)}.'
     return note + ' ' + r['where'] + ' The room is an illustration.', f'''<div class="wall" style="--rw:{r["rw"]};--rh:{r["rh"]};--s:{r["s"]};--cx:{r["cx"]};--by:{r["by"]}">
 <img class="room" src="{r["src"]}" alt="" width="{r["rw"]}" height="{r["rh"]}" loading="lazy">
-<div class="hang {style}" style="--tw:{tw:g};--th:{th:g};--fw:{fw:g};--mx:{mx:g};--mt:{mt:g};--mb:{mb:g}">
+<div class="hang {style}" style="--tw:{tw:g};--th:{th:g};--fw:{fw:g};--mx:{mx:g};--mt:{mt:g};--mb:{mb:g};--by:{by:g}">
 <img src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall" loading="lazy"></div>
 </div>'''
 
