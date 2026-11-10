@@ -27,7 +27,7 @@ e = lambda s: html.escape(str(s), quote=True)
 
 GALLERIES = [
     # slug, name, tile work id, line under the tile, intro, group order
-    ('landscapes', 'Landscapes', '133', 'Throughout her career',
+    ('landscapes', 'Landscapes', '091', 'Throughout her career',
      'Trees and woodland, the sea and shore, and the countryside of Cheshire, the Wirral and Hampshire.',
      ['Trees and woodland', 'Sea and shore', 'Countryside', 'Buildings and old places']),
     ('figurative-work', 'Figurative work', '066', 'Throughout her career',
@@ -154,7 +154,7 @@ def sort_key(w):
 
 def wall_view(w):
     """The painting at true size above a walnut cabinet, when its size is known.
-    The room picture (img/room.jpg, 1037 x 1517 px) was made by Steph and toned down; at the wall 7.6 px = 1 cm.
+    The room picture (img/room.jpg, 1037 x 1517 px) was made by Steph; the wood was calmed and the wall made a soft white (10 Nov); at the wall 7.6 px = 1 cm.
     The cabinet (about 90 cm wide, 70 cm high) is centred at x = 516 px with its top at y = 880 px.
     Each picture hangs centred over it, its lowest edge 20 cm above the top (789 px from the bottom of the picture).
     Works on paper are shown in a typical mount and thin black frame (not included unless recorded as framed);
