@@ -152,15 +152,21 @@ def sort_key(w):
     return (0 if w['no'].startswith('P') else 1, int(n) if n.isdigit() else 0)
 
 
-def wall_view(w):
-    """The painting at true size above a walnut cabinet, when its size is known.
-    The room picture (img/room.jpg, 1037 x 1517 px) was made by Steph; the wood was calmed and the wall made a soft white (10 Nov); at the wall 7.6 px = 1 cm.
-    The cabinet (about 90 cm wide, 70 cm high) is centred at x = 516 px with its top at y = 880 px.
-    Each picture hangs centred over it, its lowest edge 20 cm above the top (789 px from the bottom of the picture).
-    Works on paper are shown in a typical mount and thin black frame (not included unless recorded as framed);
-    oils recorded as framed are shown in a plain oak frame; other oils hang bare."""
-    if not (w['h'] and w['w']):
-        return '', ''
+# Two rooms, both made by Steph in ChatGPT (10 Nov), with the wood calmed and the wall made the same soft white.
+# At the wall 7.6 px = 1 cm in both. cx = the picture's centre, by = its lowest edge, in px from the left and bottom.
+ROOMS = {
+    # A walnut cabinet about 90 cm wide; the picture hangs centred over it, 20 cm above its top.
+    'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1037, rh=1517, cx=516, by=789,
+                    where='Above a cabinet about 90 cm wide.'),
+    # A side table about 65 cm across with a lamp and a mug, beside a chair (cropped from the original 1024 x 1536);
+    # the picture hangs between the lamp and the chair, 25 cm above the table top.
+    'side': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=904, rh=1120, cx=460, by=618,
+                 where='Above a side table about 65 cm across.'),
+}
+SMALL = 45   # cm: anything no bigger than this as hung (with any mount and frame) goes beside the side table
+
+def hung(w):
+    """Style, frame, mount widths and the hung size in cm."""
     paper = 'paper' in w['medium'].lower()
     if paper:
         style, fw, mx, mt, mb = 'mounted', 2.2, 7, 7, 8
@@ -168,7 +174,23 @@ def wall_view(w):
         style, fw, mx, mt, mb = 'oak', 3, 0, 0, 0
     else:
         style, fw, mx, mt, mb = 'bare', 0, 0, 0, 0
-    tw, th = w['w'] + 2 * (fw + mx), w['h'] + 2 * fw + mt + mb
+    return style, fw, mx, mt, mb, w['w'] + 2 * (fw + mx), w['h'] + 2 * fw + mt + mb
+
+def room_for(w):
+    if not (w['h'] and w['w']):
+        return None
+    tw, th = hung(w)[-2:]
+    return ROOMS['side' if max(tw, th) <= SMALL else 'cabinet']
+
+def wall_view(w):
+    """The painting at true size on a wall, when its size is known: small ones beside a side table, the rest above a cabinet.
+    Works on paper are shown in a typical mount and thin black frame (not included unless recorded as framed);
+    oils recorded as framed are shown in a plain oak frame; other oils hang bare."""
+    r = room_for(w)
+    if not r:
+        return '', ''
+    paper = 'paper' in w['medium'].lower()
+    style, fw, mx, mt, mb, tw, th = hung(w)
     if paper and not w.get('framed'):
         note = f'Shown in a typical mount and frame, which are not included. The painting itself is {size(w)}.'
     elif paper:
@@ -177,10 +199,10 @@ def wall_view(w):
         note = f'Shown in its oak frame. The painting itself is {size(w)}.'
     else:
         note = f'Shown at its real size, {size(w)}.'
-    return note + ' Above a cabinet about 90 cm wide. The room is an illustration.', f'''<div class="wall">
-<img class="room" src="img/room.jpg" alt="" width="1037" height="1517" loading="lazy">
+    return note + ' ' + r['where'] + ' The room is an illustration.', f'''<div class="wall" style="--rw:{r["rw"]};--rh:{r["rh"]};--cx:{r["cx"]};--by:{r["by"]}">
+<img class="room" src="{r["src"]}" alt="" width="{r["rw"]}" height="{r["rh"]}" loading="lazy">
 <div class="hang {style}" style="--tw:{tw:g};--th:{th:g};--fw:{fw:g};--mx:{mx:g};--mt:{mt:g};--mb:{mb:g}">
-<img src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall above a cabinet" loading="lazy"></div>
+<img src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall" loading="lazy"></div>
 </div>'''
 
 ZOOM = ('<dialog id="zoom" class="zoom" aria-label="Larger picture"><button type="button" class="zoom-close" aria-label="Close the larger picture">'
@@ -189,7 +211,7 @@ ZOOM = ('<dialog id="zoom" class="zoom" aria-label="Larger picture"><button type
 def view_buttons(w):
     return (f'<div class="views" role="group" aria-label="Choose a view of {e(w["title"])}">'
             f'<button type="button" class="view-btn" data-view="painting" aria-pressed="true"><img src="img/t/{w["id"]}.jpg" alt="">The painting</button>'
-            f'<button type="button" class="view-btn" data-view="wall" aria-pressed="false"><img src="img/room-thumb.jpg" alt="">On a wall</button></div>')
+            f'<button type="button" class="view-btn" data-view="wall" aria-pressed="false"><img src="{room_for(w)["thumb"]}" alt="">On a wall</button></div>')
 
 def gallery_nav(current=''):
     """Links to the other galleries, for the foot of every gallery page, so nobody has to scroll back up."""

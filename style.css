@@ -135,7 +135,7 @@ p { margin: 0; }
 .ex-pic { justify-self: center; display: block; min-width: 0; width: 100%; }
 .ex-pic .pane[data-pane="painting"] { display: flex; justify-content: center; }
 .ex-pic .pane[data-pane="painting"] img { width: auto; max-width: 100%; max-height: min(70vh, 600px); cursor: zoom-in; }
-.ex-pic .wall { width: min(100%, calc(66vh * 1037 / 1517)); }
+.ex-pic .wall { width: min(100%, calc(66vh * var(--rw) / var(--rh))); }
 .ex-pic .views { justify-content: center; }
 .ex-pic .pane-note { text-align: center; margin-inline: auto; }
 .ex-links .quiet { color: var(--label); }
@@ -156,15 +156,15 @@ p { margin: 0; }
   .ex-pic .pane[data-pane="painting"] img { width: 100%; max-height: none; }
 }
 
-/* See it on a wall: the picture at true size above a walnut cabinet (room picture 1037 x 1517 px; at the wall 7.6 px = 1 cm).
-   Centred over the cabinet (x = 516 px), lowest edge 20 cm above its top (789 px from the bottom of the picture).
+/* See it on a wall: the picture at true size in one of two rooms (at the wall 7.6 px = 1 cm in both).
+   Set on .wall: --rw/--rh the room picture's size in px, --cx the picture's centre from the left, --by its lowest edge from the bottom.
    --tw and --th are the hung size in cm including any mount and frame; --fw frame, --mx/--mt/--mb mount widths in cm. */
 .wall-block { padding-block: 0 72px; display: flex; flex-direction: column; gap: 16px; }
-.wall { container-type: inline-size; position: relative; width: min(100%, calc(78vh * 1037 / 1517)); aspect-ratio: 1037 / 1517; overflow: hidden; background: #E9E5E0; }
+.wall { container-type: inline-size; position: relative; width: min(100%, calc(78vh * var(--rw) / var(--rh))); aspect-ratio: var(--rw) / var(--rh); overflow: hidden; background: #E9E5E0; }
 .wall .room { position: absolute; inset: 0; width: 100%; height: 100%; }
-.wall .hang { position: absolute; box-sizing: border-box; width: calc(var(--tw) * 7.6 * 100cqw / 1037); height: calc(var(--th) * 7.6 * 100cqw / 1037);
-  left: calc((516 - var(--tw) * 3.8) * 100cqw / 1037); bottom: calc(789 * 100cqw / 1037);
-  border: calc(var(--fw) * 7.6 * 100cqw / 1037) solid transparent; padding: calc(var(--mt) * 7.6 * 100cqw / 1037) calc(var(--mx) * 7.6 * 100cqw / 1037) calc(var(--mb) * 7.6 * 100cqw / 1037);
+.wall .hang { position: absolute; box-sizing: border-box; width: calc(var(--tw) * 7.6 * 100cqw / var(--rw)); height: calc(var(--th) * 7.6 * 100cqw / var(--rw));
+  left: calc((var(--cx) - var(--tw) * 3.8) * 100cqw / var(--rw)); bottom: calc(var(--by) * 100cqw / var(--rw));
+  border: calc(var(--fw) * 7.6 * 100cqw / var(--rw)) solid transparent; padding: calc(var(--mt) * 7.6 * 100cqw / var(--rw)) calc(var(--mx) * 7.6 * 100cqw / var(--rw)) calc(var(--mb) * 7.6 * 100cqw / var(--rw));
   box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 9px 24px rgba(40,32,25,.16); }
 .wall .hang img { display: block; width: 100%; height: 100%; object-fit: fill; }
 .wall .hang.mounted { border-color: #2A2826; background: #F6F4EF; }
@@ -189,7 +189,7 @@ p { margin: 0; }
 .viewer .pane-note { padding-top: 10px; font-size: 14px; color: var(--label); max-width: 60ch; }
 .viewer .pane-title { font-family: var(--sans); font-size: 14px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--label); margin-bottom: 10px; }
 .js .viewer .pane-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.viewer .wall { margin-inline: auto; width: min(100%, calc(78vh * 1037 / 1517)); }
+.viewer .wall { margin-inline: auto; width: min(100%, calc(78vh * var(--rw) / var(--rh))); }
 .viewer .pane[data-pane="wall"] { margin-top: 32px; }
 .js .viewer .pane[data-pane="wall"] { margin-top: 0; }
 .views { display: none; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
