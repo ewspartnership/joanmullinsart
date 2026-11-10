@@ -181,13 +181,21 @@ def hung(w):
             # round the painting, then about 3.5 cm of mount and a 1.9 cm mid-brown wood frame. mx/mt/mb include the sheet.
             style, fw, mx, mt, mb = 'poem', 1.9, 5.1, 5.3, 5.3
         else:
-            # Other works on paper: a typical wide mount and thin black frame (Steph preferred this, 10 Nov).
-            style, fw, mx, mt, mb = 'mounted', 2.2, 7, 7, 8
+            # Other works on paper: a typical wide mount and a thin charcoal frame (Steph's choice, 10 Nov).
+            style, fw, mx, mt, mb = 'mounted', 1.2, 7, 7, 8
     elif w.get('framed'):
         style, fw, mx, mt, mb = 'oak', 3, 0, 0, 0
     else:
         style, fw, mx, mt, mb = 'bare', 0, 0, 0, 0
-    return style, fw, mx, mt, mb, w['w'] + 2 * (fw + mx), w['h'] + 2 * fw + mt + mb
+    pw, ph = shown_size(w)
+    return style, fw, mx, mt, mb, pw + 2 * (fw + mx), ph + 2 * fw + mt + mb
+
+def shown_size(w):
+    """The painting's size on the wall in cm. The picture is never stretched: it keeps the photo's shape, with its longer side
+    at the recorded longer side. (Where the photo and the recorded size disagree, as for Nos. 21 and 128, that's a question for Joan.)"""
+    pw, ph = w['img']
+    long = max(w['h'], w['w'])
+    return (long, long * ph / pw) if pw >= ph else (long * pw / ph, long)
 
 def room_for(w):
     if not (w['h'] and w['w']):

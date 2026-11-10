@@ -167,7 +167,7 @@ p { margin: 0; }
   border: calc(var(--fw) * var(--s) * 100cqw / var(--rw)) solid transparent; padding: calc(var(--mt) * var(--s) * 100cqw / var(--rw)) calc(var(--mx) * var(--s) * 100cqw / var(--rw)) calc(var(--mb) * var(--s) * 100cqw / var(--rw));
   box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 9px 24px rgba(40,32,25,.16); }
 .wall .hang img { display: block; width: 100%; height: 100%; object-fit: fill; }
-.wall .hang.mounted { border-color: #2A2826; background: #F6F4EF; }
+.wall .hang.mounted { border-color: #4E4B47; border-image: linear-gradient(135deg, #5A5753, #46433F) 1; background: #F6F4EF; }
 .wall .hang.mounted img { box-shadow: 0 0 0 2px #FBFAF7, 0 0 0 3px rgba(0,0,0,.06); }
 /* Poems, framed like Joan's own: mid-brown wood, cream mount, and 1.6 cm of white sheet round the painting inside the mount's cut edge */
 .wall .hang.poem { border-color: #75503A; border-image: linear-gradient(135deg, #82583B, #664430) 1; background: #F3EEE4; }
