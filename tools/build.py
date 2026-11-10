@@ -178,6 +178,12 @@ def view_buttons(w):
             f'<button type="button" class="view-btn" data-view="painting" aria-pressed="true"><img src="img/t/{w["id"]}.jpg" alt="">The painting</button>'
             f'<button type="button" class="view-btn" data-view="wall" aria-pressed="false"><img src="img/room-thumb.jpg" alt="">On a wall</button></div>')
 
+def gallery_nav(current=''):
+    """Links to the other galleries, for the foot of every gallery page, so nobody has to scroll back up."""
+    items = [(f'g-{slug}.html', name) for slug, name, *_ in GALLERIES] + [('sold.html', 'Sold'), ('for-sale.html', 'Paintings for sale')]
+    links = ''.join(f'<a href="{h}">{e(n)}</a>' for h, n in items if n != current)
+    return f'<nav class="jump more-groups" aria-label="Other galleries"><span>Other galleries:</span>{links}</nav>'
+
 pages = {}
 
 # ---------- Home ----------
@@ -275,10 +281,11 @@ for slug, name, tid, line, intro, groups in GALLERIES:
 <h1>{e(g)}</h1><p class="lead">{e(name)} · {n} painting{"s" if n != 1 else ""}</p>
 {exhibition(gw)}
 <nav class="jump more-groups" aria-label="Other groups in {e(name)}"><span>More {e(name.lower())}:</span>{others}</nav>
+{gallery_nav(name)}
 </section>''', 'Gallery', f'{g}: {name.lower()} by Joan Mullins, painter, Nantwich, Cheshire.')
-        body = head + '<div class="tiles">' + ''.join(out) + '</div></section>'
+        body = head + '<div class="tiles">' + ''.join(out) + '</div>' + gallery_nav(name) + '</section>'
     else:
-        body = head + exhibition(ws) + '</section>'
+        body = head + exhibition(ws) + gallery_nav(name) + '</section>'
     pages[f'g-{slug}.html'] = page(f'{name} · Joan Mullins', body, 'Gallery',
                                    f'{name} by Joan Mullins, painter, Nantwich, Cheshire. {intro}')
 
@@ -287,11 +294,11 @@ sold = sorted([w for w in works if w['status'] == 'sold'], key=sort_key)
 pages['sold.html'] = page('Sold · Joan Mullins', f'''<section class="wrap block">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › Sold</nav>
 <h1>Sold</h1><p class="lead">Paintings that have found homes.</p>
-{exhibition(sold, False)}</section>''', 'Gallery')
+{exhibition(sold, False)}{gallery_nav('Sold')}</section>''', 'Gallery')
 pages['new.html'] = page('New paintings · Joan Mullins', f'''<section class="wrap block">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › New paintings</nav>
 <h1>New paintings</h1><p class="lead">Finished in the last twelve months. {draft("[Draft: shows every painting dated 2026 until months are recorded]")}</p>
-{exhibition(new)}</section>''', 'Gallery')
+{exhibition(new)}{gallery_nav()}</section>''', 'Gallery')
 
 # ---------- Paintings for sale ----------
 fs = []
@@ -302,7 +309,7 @@ for slug, name, *_ in GALLERIES:
 pages['for-sale.html'] = page('Paintings for sale · Joan Mullins', f'''<section class="wrap block">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › Paintings for sale</nav>
 <h1>Paintings for sale</h1><p class="lead">Every painting Joan has for sale, gallery by gallery. Select one to see its size, price and how it looks on a wall. <a href="enquire.html#buying">How buying works</a></p>
-{"".join(fs)}</section>''', 'Gallery', 'Original paintings for sale by Joan Mullins, painter, Nantwich, Cheshire.')
+{"".join(fs)}{gallery_nav('Paintings for sale')}</section>''', 'Gallery', 'Original paintings for sale by Joan Mullins, painter, Nantwich, Cheshire.')
 
 # ---------- Work pages ----------
 def artwork_ld(w):

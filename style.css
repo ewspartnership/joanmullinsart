@@ -148,6 +148,7 @@ p { margin: 0; }
 .ex-info dd { margin: 0; }
 .ex-links { font-size: 16px; }
 .more-groups { margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--rule); align-items: baseline; }
+.more-groups + .more-groups { margin-top: 0; padding-top: 16px; border-top: 0; }
 .more-groups span { color: var(--label); }
 @media (max-width: 760px) {
   .ex { grid-template-columns: minmax(0, 1fr); padding-block: 40px; }
