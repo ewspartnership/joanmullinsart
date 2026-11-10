@@ -156,7 +156,8 @@ def sort_key(w):
 # s = px per cm at the wall; cx = the picture's centre, by = its lowest edge, in px from the left and bottom.
 ROOMS = {
     # A walnut cabinet about 90 cm wide; the picture hangs centred over it, 20 cm above its top.
-    'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1037, rh=1517, s=7.6, cx=516, by=789,
+    # Steph's second ChatGPT version (10 Nov): the same cabinet and place, one dried stem; wall evened to soft white and the walnut calmed.
+    'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1039, rh=1513, s=7.6, cx=516, by=781,
                     where='Above a cabinet about 90 cm wide.'),
     # A side table about 65 cm across with a lamp, books and a mug, beside a chair; Steph's picture (recoloured by her, 10 Nov; wall then matched to soft white and the wood made a richer walnut),
     # cropped from 1024 x 1536 to x 120-1024, y 300-1420. The picture hangs between the lamp and the chair, 25 cm above the table top.
