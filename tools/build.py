@@ -169,9 +169,13 @@ def hung(w):
     """Style, frame, mount widths and the hung size in cm."""
     paper = 'paper' in w['medium'].lower()
     if paper:
-        # Measured from Joan's own framing of one of her poems (Steph's photo, 10 Nov): about 1.6 cm of the sheet shows
-        # round the painting, then about 3.5 cm of mount and a 1.9 cm light wood frame. mx/mt/mb include the 1.6 cm of sheet.
-        style, fw, mx, mt, mb = 'mounted', 1.9, 5.1, 5.3, 5.3
+        if w['gallery'] == 'Illustrated poems':
+            # Measured from Joan's own framing of one of her poems (Steph's photo, 10 Nov): about 1.6 cm of the sheet shows
+            # round the painting, then about 3.5 cm of mount and a 1.9 cm mid-brown wood frame. mx/mt/mb include the sheet.
+            style, fw, mx, mt, mb = 'poem', 1.9, 5.1, 5.3, 5.3
+        else:
+            # Other works on paper: a typical wide mount and thin black frame (Steph preferred this, 10 Nov).
+            style, fw, mx, mt, mb = 'mounted', 2.2, 7, 7, 8
     elif w.get('framed'):
         style, fw, mx, mt, mb = 'oak', 3, 0, 0, 0
     else:
@@ -186,7 +190,7 @@ def room_for(w):
 
 def wall_view(w):
     """The painting at true size on a wall, when its size is known: small ones beside a side table, the rest above a cabinet.
-    Works on paper are shown in a mount and light wood frame like Joan's own (not included unless recorded as framed);
+    Works on paper are shown mounted: poems in a frame like Joan's own, others in a typical mount and thin black frame (not included unless recorded as framed);
     oils recorded as framed are shown in a plain oak frame; other oils hang bare."""
     r = room_for(w)
     if not r:

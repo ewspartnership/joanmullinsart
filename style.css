@@ -167,9 +167,11 @@ p { margin: 0; }
   border: calc(var(--fw) * var(--s) * 100cqw / var(--rw)) solid transparent; padding: calc(var(--mt) * var(--s) * 100cqw / var(--rw)) calc(var(--mx) * var(--s) * 100cqw / var(--rw)) calc(var(--mb) * var(--s) * 100cqw / var(--rw));
   box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 9px 24px rgba(40,32,25,.16); }
 .wall .hang img { display: block; width: 100%; height: 100%; object-fit: fill; }
-.wall .hang.mounted { border-color: #B8925F; border-image: linear-gradient(135deg, #C9A574, #A98352) 1; background: #F4F1EA; }
-/* the white sheet round the painting (1.6 cm), then the cut edge of the mount */
-.wall .hang.mounted img { box-shadow: 0 0 0 calc(1.6 * var(--s) * 100cqw / var(--rw)) #FBFAF7, 0 0 0 calc(1.6 * var(--s) * 100cqw / var(--rw) + 1.5px) #E4DED2; }
+.wall .hang.mounted { border-color: #2A2826; background: #F6F4EF; }
+.wall .hang.mounted img { box-shadow: 0 0 0 2px #FBFAF7, 0 0 0 3px rgba(0,0,0,.06); }
+/* Poems, framed like Joan's own: mid-brown wood, cream mount, and 1.6 cm of white sheet round the painting inside the mount's cut edge */
+.wall .hang.poem { border-color: #75503A; border-image: linear-gradient(135deg, #82583B, #664430) 1; background: #F3EEE4; }
+.wall .hang.poem img { box-shadow: 0 0 0 calc(1.6 * var(--s) * 100cqw / var(--rw)) #FBFAF7, 0 0 0 calc(1.6 * var(--s) * 100cqw / var(--rw) + 1.5px) #E2DACB; }
 .wall .hang.oak { border-color: #B8925F; border-image: linear-gradient(135deg, #C9A574, #A98352) 1; }
 
 /* Larger picture, shown over the page */
