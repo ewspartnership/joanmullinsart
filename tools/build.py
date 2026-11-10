@@ -153,15 +153,15 @@ def sort_key(w):
 
 
 # Two rooms, both made by Steph in ChatGPT (10 Nov), with the wood calmed and the wall made the same soft white.
-# At the wall 7.6 px = 1 cm in both. cx = the picture's centre, by = its lowest edge, in px from the left and bottom.
+# s = px per cm at the wall; cx = the picture's centre, by = its lowest edge, in px from the left and bottom.
 ROOMS = {
     # A walnut cabinet about 90 cm wide; the picture hangs centred over it, 20 cm above its top.
-    'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1037, rh=1517, cx=516, by=789,
+    'cabinet': dict(src='img/room.jpg', thumb='img/room-thumb.jpg', rw=1037, rh=1517, s=7.6, cx=516, by=789,
                     where='Above a cabinet about 90 cm wide.'),
-    # A side table about 65 cm across with a lamp and a mug, beside a chair (cropped from the original 1024 x 1536);
-    # the picture hangs between the lamp and the chair, 25 cm above the table top.
-    'side': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=904, rh=1120, cx=460, by=618,
-                 where='Above a side table about 65 cm across.'),
+    # A close view of a small walnut table with a bowl. Its size is taken as 80 cm wide (the bowl about 12 cm across),
+    # which gives 13.5 px = 1 cm at the wall. The table top meets the wall 294 px from the bottom; the picture hangs 20 cm above it.
+    'table': dict(src='img/room-small.jpg', thumb='img/room-small-thumb.jpg', rw=1199, rh=1312, s=13.5, cx=640, by=564,
+                  where='Above a small table about 80 cm wide.'),
 }
 SMALL = 45   # cm: anything no bigger than this as hung (with any mount and frame) goes beside the side table
 
@@ -180,7 +180,7 @@ def room_for(w):
     if not (w['h'] and w['w']):
         return None
     tw, th = hung(w)[-2:]
-    return ROOMS['side' if max(tw, th) <= SMALL else 'cabinet']
+    return ROOMS['table' if max(tw, th) <= SMALL else 'cabinet']
 
 def wall_view(w):
     """The painting at true size on a wall, when its size is known: small ones beside a side table, the rest above a cabinet.
@@ -199,7 +199,7 @@ def wall_view(w):
         note = f'Shown in its oak frame. The painting itself is {size(w)}.'
     else:
         note = f'Shown at its real size, {size(w)}.'
-    return note + ' ' + r['where'] + ' The room is an illustration.', f'''<div class="wall" style="--rw:{r["rw"]};--rh:{r["rh"]};--cx:{r["cx"]};--by:{r["by"]}">
+    return note + ' ' + r['where'] + ' The room is an illustration.', f'''<div class="wall" style="--rw:{r["rw"]};--rh:{r["rh"]};--s:{r["s"]};--cx:{r["cx"]};--by:{r["by"]}">
 <img class="room" src="{r["src"]}" alt="" width="{r["rw"]}" height="{r["rh"]}" loading="lazy">
 <div class="hang {style}" style="--tw:{tw:g};--th:{th:g};--fw:{fw:g};--mx:{mx:g};--mt:{mt:g};--mb:{mb:g}">
 <img src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall" loading="lazy"></div>
