@@ -41,8 +41,8 @@ GALLERIES = [
      'Bowls, jugs, fruit and flowers, arranged and painted in the studio, from throughout her career.', []),
     ('illustrated-poems', 'Illustrated poems', 'p9', '2018 to 2020',
      'Favourite poems, hand-lettered and illustrated in ink and watercolour between 2018 and 2020.', []),
-    ('sea-imaginings', 'Sea imaginings', '171', 'Since moving to Nantwich',
-     'Shells and the sea, transformed in paint since her move to Nantwich.', []),
+    ('sea-imaginings', 'Sea imaginings', '171', '2013 onwards',
+     'Shells and the sea, transformed in paint, from 2013 onwards.', []),
 ]
 GAL = {g[1]: g for g in GALLERIES}
 
