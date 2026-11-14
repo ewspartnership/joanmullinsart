@@ -26,23 +26,23 @@ by_id = {w['id']: w for w in works}
 e = lambda s: html.escape(str(s), quote=True)
 
 GALLERIES = [
-    # slug, name, tile work id, line under the tile, intro, group order
+    # slug, name, tile work id, line under the tile, intro (one sentence, with the dates), group order
     ('landscapes', 'Landscapes', '091', 'Throughout her career',
-     'Trees and woodland, the sea and shore, and the countryside of Cheshire, the Wirral and Hampshire.',
+     'Trees and woodland, the sea and shore, and the countryside of Cheshire, the Wirral and Hampshire, from throughout her career.',
      ['Trees and woodland', 'Sea and shore', 'Countryside', 'Buildings and old places']),
     ('figurative-work', 'Figurative work', '066', 'Throughout her career',
-     'Portraits, figures and heads in pencil, ink, pastel, watercolour and oil.', []),
+     'Portraits, figures and heads in pencil, ink, pastel, watercolour and oil, from throughout her career.', []),
     ('botanical-work', 'Botanical work', '039', 'About 1980 to 2000',
-     'Flowers and plants painted from life, with close attention to their structure.', []),
+     'Flowers and plants painted from life, with close attention to their structure, from about 1980 to 2000.', []),
     ('watercolours-of-the-imagination', 'Watercolours of the imagination', '076', 'About the 1990s to 2013',
-     'Compositions drawn entirely from imagination: figures, shells, the sea and designs.',
+     'Figures, shells, the sea and designs, drawn entirely from imagination, from about the 1990s to 2013.',
      ['Imaginative figures', 'Shell studies', 'Sea fantasies', 'Designs']),
     ('still-life', 'Still life', '019', '[Dates, from Joan]',
-     'Bowls, jugs, fruit and flowers, arranged and painted in the studio.', []),
+     'Bowls, jugs, fruit and flowers, arranged and painted in the studio, [dates, from Joan].', []),
     ('illustrated-poems', 'Illustrated poems', 'p9', '2018 to 2020',
-     'Favourite poems, hand-lettered and illustrated in ink and watercolour.', []),
+     'Favourite poems, hand-lettered and illustrated in ink and watercolour between 2018 and 2020.', []),
     ('sea-imaginings', 'Sea imaginings', '171', 'Since moving to Nantwich',
-     'Shells and the sea, transformed in paint.', []),
+     'Shells and the sea, transformed in paint since her move to Nantwich.', []),
 ]
 GAL = {g[1]: g for g in GALLERIES}
 
@@ -338,7 +338,7 @@ for slug, name, tid, line, intro, groups in GALLERIES:
     ws = gallery_works(name)
     present = [g for g in groups if any(w['group'] == g for w in ws)]
     head = (f'<section class="wrap block"><nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › {e(name)}</nav>'
-            f'<h1>{e(name)}</h1><p class="lead">{e(intro)} <span class="dates">{draft(e(line))}</span></p>')
+            f'<h1>{e(name)}</h1><p class="lead">{draft(e(intro))}</p>')
     if len(present) > 1:
         # Big gallery: its groups as tiles, each group on its own page
         out = []
