@@ -55,7 +55,7 @@ p { margin: 0; }
 .block { padding-block: 8px 80px; }
 .block > h1 { margin-bottom: 8px; }
 .lead { color: var(--ink-soft); max-width: 62ch; margin-bottom: 32px; }
-.lead .dates { color: var(--label); }
+.lead .dates { color: var(--label); display: block; margin-top: .25em; }
 
 /* Gallery tiles: one each, all the same size */
 .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 56px 32px; }

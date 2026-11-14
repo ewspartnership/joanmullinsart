@@ -1562,6 +1562,28 @@
   "framed": false
  },
  {
+  "id": "145",
+  "no": "145",
+  "title": "Copy of Self-Portrait - Delacroix",
+  "gallery": "Figurative work",
+  "group": "People",
+  "on_site": true,
+  "medium": "Oil on canvas board",
+  "h": 28,
+  "w": 24,
+  "year": "2026",
+  "place": "",
+  "status": "available",
+  "price": 100,
+  "text": "",
+  "alt": "Oil copy of Delacroix's self-portrait: a man with dark wavy hair and a moustache, in a dark coat and green waistcoat, against a warm brown background.",
+  "img": [
+   1230,
+   1600
+  ],
+  "framed": false
+ },
+ {
   "id": "146",
   "no": "146",
   "title": "Shell Skeleton",

@@ -31,7 +31,7 @@ GALLERIES = [
      'Trees and woodland, the sea and shore, and the countryside of Cheshire, the Wirral and Hampshire.',
      ['Trees and woodland', 'Sea and shore', 'Countryside', 'Buildings and old places']),
     ('figurative-work', 'Figurative work', '066', 'Throughout her career',
-     'Portraits, figures and heads, in pencil, ink, pastel, watercolour and oil.', []),
+     'Portraits, figures and heads in pencil, ink, pastel, watercolour and oil.', []),
     ('botanical-work', 'Botanical work', '039', 'About 1980 to 2000',
      'Flowers and plants painted from life, with close attention to their structure.', []),
     ('watercolours-of-the-imagination', 'Watercolours of the imagination', '076', 'About the 1990s to 2013',
@@ -425,7 +425,7 @@ pages['about.html'] = page('About Joan Mullins', f'''<section class="wrap about"
 <div class="copy"><h1>About Joan</h1>
 <p>{draft("[A few lines in Joan’s own words, from her old welcome text, brought up to date]")}</p>
 <p>Joan Mullins was born in Bulawayo, in what was then Rhodesia. She studied English literature and fine art at the University of Natal, graduating in 1963.</p>
-<p>She settled in England in 1979, and has lived in Nantwich, Cheshire, since 2013. Most of the work on this site dates from after 1979. Much of what she made before then was sold, lost or left behind in moves between Rhodesia, South Africa and Ireland, though a few earlier pieces survive. {draft("[Joan to OK this]")}</p>
+<p>She settled in England in 1979, and has lived in Nantwich, Cheshire, since 2013. Most of the work on this site dates from after 1979. Much of what she made before then was sold, lost or left behind in moves between Rhodesia, South Africa and Ireland, though a few earlier pieces survive.</p>
 <p>Her botanical paintings were made with close attention to botanical detail; she submitted work to the Royal Horticultural Society and showed with the Society of Women Artists at Westminster Hall {draft("[years]")}.</p>
 <p>Her imaginative work was shown with the Society for Art of Imagination at the Mall Galleries, London {draft("[years]")}.</p>
 <p>She is still painting. <a href="new.html">See her newest work</a>, or <a href="gallery.html">browse the galleries</a>.</p>
