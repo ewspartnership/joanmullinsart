@@ -9,7 +9,8 @@ import json, html, os, re
 from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DRAFT = True  # while True: pages ask search engines not to list them, and draft gaps show in brackets
+DRAFT = False  # while True: pages ask search engines not to list them, and draft gaps show in brackets (launched 14 Nov 2026)
+GOATCOUNTER = 'joanmullinsart'  # site code at goatcounter.com; visits are counted without cookies
 EMAIL = 'enquiries@joanmullinsart.co.uk'
 ETSY = 'https://www.etsy.com/shop/ArtistjoanmullinsCo'
 SITE = 'joanmullinsart.co.uk'
@@ -75,6 +76,7 @@ def page(title, body, current='', desc='', image='img/joan.jpg', ld=''):
     nav = [('index.html', 'Home'), ('gallery.html', 'Gallery'), ('about.html', 'About'), ('enquire.html', 'Enquire')]
     links = ''.join(f'<a href="{h}"{" aria-current=\"page\"" if n == current else ""}>{n}</a>' for h, n in nav)
     robots = '<meta name="robots" content="noindex">\n' if DRAFT else ''
+    counter = '' if DRAFT or not GOATCOUNTER else f'<script data-goatcounter="https://{GOATCOUNTER}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>\n'
     return f'''<!doctype html>
 <html lang="en-GB">
 <head>
@@ -108,9 +110,11 @@ def page(title, body, current='', desc='', image='img/joan.jpg', ld=''):
 <span>Joan Mullins, painter, Nantwich, Cheshire</span>
 <a href="mailto:{EMAIL}">{EMAIL}</a>
 <a href="{ETSY}">Cards and prints on Etsy</a>
+<a href="privacy.html">Privacy</a>
+<span>All images © Joan Mullins</span>
 </div></footer>
 <script src="site.js"></script>
-</body>
+{counter}</body>
 </html>
 '''
 
@@ -371,7 +375,7 @@ pages['sold.html'] = page('Sold · Joan Mullins', f'''<section class="wrap block
 {exhibition(sold, False)}{gallery_nav('Sold')}</section>''', 'Gallery')
 pages['new.html'] = page('New paintings · Joan Mullins', f'''<section class="wrap block">
 <nav class="crumbs" aria-label="Breadcrumb"><a href="gallery.html">Gallery</a> › New paintings</nav>
-<h1>New paintings</h1><p class="lead">Finished in the last twelve months. {draft("[Draft: shows every painting dated 2026 until months are recorded]")}</p>
+<h1>New paintings</h1><p class="lead">Finished in the last twelve months.</p>
 {exhibition(new)}{gallery_nav()}</section>''', 'Gallery')
 
 # ---------- Paintings for sale ----------
@@ -423,11 +427,9 @@ for w in works:
 pages['about.html'] = page('About Joan Mullins', f'''<section class="wrap about">
 <img src="img/joan.jpg" alt="Joan Mullins smiling, in a coral cardigan and patterned scarf, with her paintings on the wall behind her">
 <div class="copy"><h1>About Joan</h1>
-<p>{draft("[A few lines in Joan’s own words, from her old welcome text, brought up to date]")}</p>
 <p>Joan Mullins was born in Bulawayo, in what was then Rhodesia. She studied English literature and fine art at the University of Natal, graduating in 1963.</p>
 <p>She settled in England in 1979, and has lived in Nantwich, Cheshire, since 2013. Most of the work on this site dates from after 1979. Much of what she made before then was sold, lost or left behind in moves between Rhodesia, South Africa and Ireland, though a few earlier pieces survive.</p>
-<p>Her botanical paintings were made with close attention to botanical detail; she submitted work to the Royal Horticultural Society and showed with the Society of Women Artists at Westminster Hall {draft("[years]")}.</p>
-<p>Her imaginative work was shown with the Society for Art of Imagination at the Mall Galleries, London {draft("[years]")}.</p>
+<p>From the early 1980s onwards she has exhibited in a number of London galleries, extensively in Hampshire, and more recently in Cheshire and on the Wirral.</p>
 <p>She is still painting. <a href="new.html">See her newest work</a>, or <a href="gallery.html">browse the galleries</a>.</p>
 </div></section>''', 'About', 'About Joan Mullins, painter, born in Bulawayo, living and painting in Nantwich, Cheshire.')
 
@@ -436,7 +438,7 @@ for_sale = [w for slug, name, *_ in GALLERIES for w in gallery_works(name) if w[
 options = ''.join(f'<option value="w-{w["id"]}">{e(w["title"])} (No. {e(w["no"])}, {e(price_line(w))})</option>' for w in for_sale)
 form_attrs = f'action="{e(FORM_ENDPOINT)}" method="post"' if FORM_ENDPOINT else 'action="#" method="post" data-mailto="' + EMAIL + '"'
 key_field = f'<input type="hidden" name="access_key" value="{e(FORM_KEY)}"><input type="hidden" name="subject" value="Enquiry from joanmullinsart.co.uk">' if FORM_ENDPOINT and FORM_KEY else ''
-form_gap = '' if FORM_ENDPOINT else f'<p class="small">{draft("[Draft: until a form service is set up, sending opens your email program with the message filled in]")}</p>'
+form_gap = ''
 pages['enquire.html'] = page('Enquire · Joan Mullins', f'''<section class="wrap enquire">
 <h1>Ask about a painting</h1>
 <p class="lead">To buy a painting, ask a question or arrange to see one, send Joan a message. She replies personally.</p>
@@ -464,17 +466,27 @@ pages['enquire.html'] = page('Enquire · Joan Mullins', f'''<section class="wrap
 <ol class="steps">
 <li><b>Ask.</b> Send a message about the painting you like. Joan will confirm it’s still available, and tell you the postage cost if you’d like it sent.</li>
 <li><b>Agree.</b> Joan emails you the details: the price, postage or collection, and how to pay.</li>
-<li><b>Pay.</b> By bank transfer, or in cash if you collect. Joan sends or hands over the painting once the payment has arrived. {draft('[Joan to confirm how she takes payment]')}</li>
+<li><b>Pay.</b> By bank transfer. Joan sends or hands over the painting once the payment has arrived.</li>
 <li><b>Receive it.</b> Collect it from Nantwich, or Joan posts it within the UK, well packed and by a tracked, insured service.</li>
 <li><b>Change your mind?</b> If it was posted to you, you can return it within 14 days of it arriving for a full refund. Joan’s email confirming the sale explains how.</li>
 </ol>
-<p>Every painting is an original by Joan. Works on paper are sold unframed unless the painting’s page says otherwise. {draft("[Framing available on request? Joan to say]")}</p>
+<p>Every painting is an original by Joan. Works on paper are sold unframed unless the painting’s page says otherwise. Framing is not available.</p>
 <h2>Cards and prints</h2>
 <p>Cards and prints of Joan’s work are sold through her <a href="{ETSY}">Etsy shop</a>.</p>
 <h2>Your details</h2>
-<p>Your name and email are used only to reply to your enquiry and arrange any sale. They are not shared. This website uses no cookies or tracking.</p>
+<p>Your name and email are used only to reply to your enquiry and arrange any sale. They are not shared. See <a href="privacy.html">Privacy</a>.</p>
 <p class="small">Joan Mullins, Nantwich, Cheshire.</p>
 </section>''', 'Enquire', 'Ask Joan Mullins about buying a painting. Collection from Nantwich, Cheshire, or UK postage.')
+
+pages['privacy.html'] = page('Privacy · Joan Mullins', f'''<section class="wrap enquire">
+<h1>Privacy</h1>
+<h2>Enquiries</h2>
+<p>When you send a message from the Enquire page, your name, email address and message go to Joan by email, so that she can reply and arrange any sale. They are not used for anything else and are not shared.</p>
+<h2>Visits</h2>
+<p>Visits to this website are counted with GoatCounter, which uses no cookies and collects no personal information. Joan sees only totals, such as how many people looked at each page and roughly where from.</p>
+<p>To stop your visits being counted on this browser, open any page with <span class="addr">#toggle-goatcounter</span> added to the end of its address. Do the same again to undo it.</p>
+<p class="small">Questions about this: <span class="addr">{EMAIL}</span></p>
+</section>''', '', 'How the Joan Mullins website uses your details.')
 
 pages['404.html'] = page('Page not found · Joan Mullins', '''<section class="wrap enquire"><h1>Page not found</h1>
 <p>That page isn’t here. Try the <a href="gallery.html">gallery</a> or the <a href="index.html">home page</a>.</p></section>''')
@@ -484,5 +496,6 @@ for name, s in pages.items():
     open(os.path.join(ROOT, name), 'w').write(s.replace('%%PATH%%', path))
 urls = ''.join(f'<url><loc>{BASE}{"" if n == "index.html" else n}</loc></url>' for n in pages if n != '404.html')
 open(os.path.join(ROOT, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls + '</urlset>\n')
-open(os.path.join(ROOT, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\nSitemap: {BASE}sitemap.xml\n')
+AI_BOTS = ['GPTBot', 'ClaudeBot', 'CCBot', 'Google-Extended', 'Applebot-Extended', 'Bytespider', 'PerplexityBot', 'meta-externalagent']
+open(os.path.join(ROOT, 'robots.txt'), 'w').write(''.join(f'User-agent: {b}\nDisallow: /\n\n' for b in AI_BOTS) + f'User-agent: *\nAllow: /\n\nSitemap: {BASE}sitemap.xml\n')
 print(len(pages), 'pages written')
