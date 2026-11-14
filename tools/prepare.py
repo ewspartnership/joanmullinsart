@@ -4,9 +4,11 @@ Only fields that appear on the website go into data/works.json.
 Inputs (in the chat's workspace, not in this repository):
   CAT  a folder of the catalogue's `works` records as JSON (ArtifactData list with out_dir), one file per work
   SRC  the catalogue's main pictures: photos/pXXXX.jpg files and asset-id .jpgs (Artifact read with paths / path)
-Pictures: on 10 Nov 2026 the website copies of 15 works were trimmed or straightened here first (see the brief's
-Next steps). Until the catalogue's own copies match, don't run --images, or those trims are lost; the pictures
-in img/ are the ones to keep."""
+Pictures: without --images, only works with no picture in img/w yet are made, so to replace one picture, delete its
+img/w and img/t files first. With --images every picture is remade from SRC; the catalogue's copies have matched the
+website's since 10 Nov 2026, so that is safe.
+If the catalogue's pictures can't be read, the archive copies in Joan Mullins catalogue images (full size, with the
+catalogue's edits applied) can stand in for them."""
 import json, glob, os, sys
 from PIL import Image, ImageOps
 

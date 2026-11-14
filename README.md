@@ -20,7 +20,7 @@ While `DRAFT = True` in `tools/build.py`, every page asks search engines not to 
 
 ## Refreshing from the catalogue
 
-`tools/prepare.py` rebuilds `data/works.json` from a snapshot of the catalogue's records (see the notes at its top). It only remakes the pictures with `--images`; don't use that until the catalogue's copies match the pictures here (some were trimmed here first, on 10 Nov 2026).
+`tools/prepare.py` rebuilds `data/works.json` from a snapshot of the catalogue's records (see the notes at its top). Without `--images` it only makes pictures that are missing (delete a work's `img/w` and `img/t` files to replace its picture); with `--images` it remakes them all from the catalogue's pictures, which have matched the ones here since 10 Nov 2026.
 
 ## "On a wall"
 
