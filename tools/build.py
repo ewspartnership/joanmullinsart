@@ -261,7 +261,7 @@ if hero:
 <figcaption><span>New painting · <a href="{row_href(hero)}"><em>{e(hero["title"])}</em></a>, {e(hero["medium"].lower())}, {e(hero["year"])}</span>
 <a href="new.html">All new paintings</a></figcaption></figure></section>''')
 home.append(f'''<section class="wrap intro">
-<p class="lede">Paintings and drawings, {draft("[earliest surviving year]")} to now</p>
+<p class="lede">Paintings and drawings, 1979 to now</p>
 <p>Over more than sixty years, Joan Mullins has worked across a remarkable range of subjects and styles, from closely observed landscapes and botanical studies to intricate compositions drawn entirely from imagination. These galleries bring together the different strands of a lifetime’s painting.</p>
 </section>
 <section class="wrap block"><h2 class="eyebrow">The galleries</h2>{tiles()}<p class="after-tiles"><a href="for-sale.html">See all {len([w for w in works if w['on_site'] and w['status'] == 'available'])} paintings for sale</a></p></section>
@@ -269,7 +269,8 @@ home.append(f'''<section class="wrap intro">
 <img src="img/joan.jpg" alt="Joan Mullins smiling, in a coral cardigan and patterned scarf, with her paintings on the wall behind her">
 <div class="copy"><h2>About Joan</h2>
 <p>Born in Bulawayo, in what was then Rhodesia, Joan studied English literature and fine art at the University of Natal, graduating in 1963.</p>
-<p>Most of the work shown here dates from after she settled in England in 1979. Much of what she made before then was sold, lost or left behind in moves between Rhodesia, South Africa and Ireland, though a few earlier pieces survive. {draft("[Joan to OK this line]")}</p>
+<p>Most of the work shown here dates from after she settled in England in 1979. Much of what she made before then was sold, lost or left behind in moves between Rhodesia, South Africa and Ireland, though a few earlier pieces survive.</p>
+<p>From the early 1980s onwards she has exhibited in a number of London galleries, extensively in Hampshire, and more recently in Cheshire and on the Wirral.</p>
 <a href="about.html">Read her story</a></div></div></section>
 <section class="wrap ask"><h2>Ask about a painting</h2>
 <p>Prices are shown with each painting. To buy one or arrange to see it, get in touch with Joan.</p>
@@ -425,19 +426,9 @@ pages['about.html'] = page('About Joan Mullins', f'''<section class="wrap about"
 <p>{draft("[A few lines in Joan’s own words, from her old welcome text, brought up to date]")}</p>
 <p>Joan Mullins was born in Bulawayo, in what was then Rhodesia. She studied English literature and fine art at the University of Natal, graduating in 1963.</p>
 <p>She settled in England in 1979, and has lived in Nantwich, Cheshire, since 2013. Most of the work on this site dates from after 1979. Much of what she made before then was sold, lost or left behind in moves between Rhodesia, South Africa and Ireland, though a few earlier pieces survive. {draft("[Joan to OK this]")}</p>
-<p>Her botanical paintings were made with close attention to botanical detail; she submitted work to the Royal Horticultural Society and showed with the Society of Women Artists at Westminster Hall {draft("[years; member or exhibitor]")}.</p>
-<p>Her imaginative work was shown with the Society for Art of Imagination at the Mall Galleries, London {draft("[years; member or exhibitor; any awards]")}.</p>
+<p>Her botanical paintings were made with close attention to botanical detail; she submitted work to the Royal Horticultural Society and showed with the Society of Women Artists at Westminster Hall {draft("[years]")}.</p>
+<p>Her imaginative work was shown with the Society for Art of Imagination at the Mall Galleries, London {draft("[years]")}.</p>
 <p>She is still painting. <a href="new.html">See her newest work</a>, or <a href="gallery.html">browse the galleries</a>.</p>
-<h2>Where her work has been shown</h2>
-<ul class="cv">
-<li>Society of Women Artists, Westminster Hall, London {draft("[year or years]")}</li>
-<li>Society for Art of Imagination, Mall Galleries, London {draft("[year or years]")}</li>
-<li>Royal Horticultural Society {draft("[what and when: submissions, shows, any medals]")}</li>
-<li>{draft("[Exhibitions in Cheshire and Hampshire, with years]")}</li>
-<li>Wirral Open Studios, West Kirby, 2024 and 2025</li>
-</ul>
-<h2>Memberships and awards</h2>
-<p>{draft("[Any societies Joan belongs or belonged to, and any awards or prizes]")}</p>
 </div></section>''', 'About', 'About Joan Mullins, painter, born in Bulawayo, living and painting in Nantwich, Cheshire.')
 
 # ---------- Enquire ----------
