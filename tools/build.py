@@ -481,7 +481,7 @@ pages['enquire.html'] = page('Enquire · Joan Mullins', f'''<section class="wrap
 pages['privacy.html'] = page('Privacy · Joan Mullins', f'''<section class="wrap enquire">
 <h1>Privacy</h1>
 <h2>Enquiries</h2>
-<p>When you send a message from the Enquire page, your name, email address and message go to Joan by email, so that she can reply and arrange any sale. They are not used for anything else and are not shared.</p>
+<p>When you send a message from the Enquire page, your name, email address and message go by email to Joan’s family, who read enquiries first and pass them on to Joan. They are not used for anything else and are not shared outside the family.</p>
 <h2>Visits</h2>
 <p>Visits to this website are counted with GoatCounter, which uses no cookies and collects no personal information. Joan sees only totals, such as how many people looked at each page and roughly where from.</p>
 <p>To stop your visits being counted on this browser, open any page with <span class="addr">#toggle-goatcounter</span> added to the end of its address. Do the same again to undo it.</p>
