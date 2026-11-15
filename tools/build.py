@@ -12,7 +12,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DRAFT = False  # while True: pages ask search engines not to list them, and draft gaps show in brackets (launched 14 Nov 2026)
 GOATCOUNTER = 'joanmullinsart'  # site code at goatcounter.com; visits are counted without cookies
 EMAIL = 'enquiries@joanmullinsart.co.uk'
-ETSY = 'https://www.etsy.com/shop/ArtistjoanmullinsCo'
+ETSY = 'https://www.etsy.com/shop/JoanMullinsArt'
 SITE = 'joanmullinsart.co.uk'
 BASE = 'https://joanmullinsart.co.uk/'
 # Enquiry form. Leave FORM_ENDPOINT empty until a form service is set up (for example Web3Forms:
