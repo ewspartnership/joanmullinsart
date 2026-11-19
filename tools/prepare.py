@@ -30,6 +30,9 @@ def num(x):
     if x in (None, ''): return None
     x = float(x); return int(x) if x == int(x) else x
 
+# Shown as "Price on request" whatever the catalogue's price, until Joan says (Steph, 19 Nov 2026): No. 128's four heads can be
+# bought singly or together, and Joan hasn't yet given a price for one head and for the four.
+ON_REQUEST = {128}
 STATUS = {'Available': 'available', 'NFS': 'nfs', 'Gifted': 'nfs', 'Sold': 'sold', '': 'available', None: 'available'}
 sel = [w for w in W.values() if w.get('web_pick') == 'Y' or (w.get('status') == 'Sold' and w['n'] != 224)]
 os.makedirs(REPO + '/img/w', exist_ok=True); os.makedirs(REPO + '/img/t', exist_ok=True); os.makedirs(REPO + '/data', exist_ok=True)
@@ -48,7 +51,7 @@ for w in sorted(sel, key=lambda w: w['n']):
         'on_site': w.get('web_pick') == 'Y',
         'medium': (w.get('medium') or '').strip(), 'h': num(w.get('height_cm')), 'w': num(w.get('width_cm')),
         'year': str(w.get('year') or '').strip(), 'place': (w.get('place') or '').strip(),
-        'status': st, 'price': num(w.get('price_gbp')) if st == 'available' else None,
+        'status': st, 'price': num(w.get('price_gbp')) if st == 'available' and w['n'] not in ON_REQUEST else None,
         'text': (w.get('web_text') or '').strip(), 'alt': (w.get('alt_text') or '').strip(),
         'img': [big.width, big.height],
         'framed': w.get('framed') == 'Y',
