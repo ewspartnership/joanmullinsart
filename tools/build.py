@@ -51,9 +51,16 @@ def draft(s):
     """Show [bracketed] gaps in the draft colour."""
     return re.sub(r'\[([^\]]+)\]', r'<span class="gap">[\1]</span>', s)
 
+# Works whose main picture shows several sheets together (Steph, 19 Nov 2026). The recorded size is one sheet. "On a wall"
+# shows them in pairs, two pictures, each sheet in its own cream mount and wood frame like the poems (not included).
+# aspect is the width/height of each sheet's picture (img/t/<id>.jpg); gap is the space between the two frames, in cm.
+SETS = {'128': dict(sheets='four', aspect=0.8, gap=6, pairs=[
+    (('128-1', 'the profile with earrings'), ('128-2', 'the older woman in a headscarf')),
+    (('128-3', 'the profile with a ribbon'), ('128-4', 'the woman in a flowered hat'))])}
+
 def size(w):
     if w['h'] and w['w']:
-        return f"{w['h']} × {w['w']} cm"
+        return f"{w['h']} × {w['w']} cm" + (' each' if w['id'] in SETS else '')
     return ''
 
 def price_line(w):
@@ -191,7 +198,9 @@ FRAMES = {
 def hung(w):
     """Style, frame, mount widths and the hung size in cm."""
     paper = 'paper' in w['medium'].lower()
-    if w.get('framed') and w['id'] in FRAMES:
+    if w['id'] in SETS:
+        style, fw, mx, mt, mb = 'creamwood', 1.4, 7, 7, 8
+    elif w.get('framed') and w['id'] in FRAMES:
         f = FRAMES[w['id']]
         style, fw, mx, mt, mb = f['style'], f['fw'], f['mx'], f['mt'], f['mb']
     elif paper:
@@ -214,6 +223,8 @@ def shown_size(w):
     at the recorded longer side. (Where the photo and the recorded size disagree, as for Nos. 21 and 128, that's a question for Joan.)"""
     pw, ph = w['img']
     long = max(w['h'], w['w'])
+    if w['id'] in SETS:
+        return long * SETS[w['id']]['aspect'], long
     return (long, long * ph / pw) if pw >= ph else (long * pw / ph, long)
 
 def room_for(w):
@@ -238,6 +249,8 @@ def wall_view(w):
     style, fw, mx, mt, mb, tw, th = hung(w)
     raise_cm = max(0.0, r['mid'] - th / 2 - min_gap(r))
     by = round(r['by'] + raise_cm * r['s'], 1)
+    if w['id'] in SETS:
+        return set_walls(w, r, style, fw, mx, mt, mb, tw, th, by)
     if paper and not w.get('framed'):
         note = f'Shown in a typical mount and frame, which are not included. The painting itself is {size(w)}.'
     else:
@@ -248,12 +261,28 @@ def wall_view(w):
 <img src="img/t/{w["id"]}.jpg" alt="{e(w["title"])} shown at its real size on a wall" loading="lazy"></div>
 </div>'''
 
+def set_walls(w, r, style, fw, mx, mt, mb, tw, th, by):
+    """Two pictures for a set of sheets: each pair side by side, each sheet framed on its own."""
+    st = SETS[w['id']]
+    dx = (tw + st['gap']) / 2
+    walls = []
+    for pair in st['pairs']:
+        hangs = ''.join(f'''<div class="hang {style}" style="--tw:{tw:g};--th:{th:g};--fw:{fw:g};--mx:{mx:g};--mt:{mt:g};--mb:{mb:g};--by:{by:g};--dx:{side * dx:g}">
+<img src="img/t/{pid}.jpg" alt="{e(desc[0].upper() + desc[1:])}, one of {e(w["title"])}, shown at its real size on a wall" loading="lazy"></div>
+''' for side, (pid, desc) in zip((-1, 1), pair))
+        walls.append(f'''<div class="wall" style="--rw:{r["rw"]};--rh:{r["rh"]};--s:{r["s"]};--cx:{r["cx"]};--by:{r["by"]}">
+<img class="room" src="{r["src"]}" alt="" width="{r["rw"]}" height="{r["rh"]}" loading="lazy">
+{hangs}</div>''')
+    note = (f"The {st['sheets']} sheets shown in pairs, each in a cream mount and wood frame, which are not included. "
+            f"Each sheet is {w['h']} × {w['w']} cm. {r['where']} The room is an illustration.")
+    return note, '<div class="walls2">' + '\n'.join(walls) + '</div>'
+
 ZOOM = ('<dialog id="zoom" class="zoom" aria-label="Larger picture"><button type="button" class="zoom-close" aria-label="Close the larger picture">'
         '<span aria-hidden="true">×</span><span class="zoom-label">Close</span></button><img alt=""></dialog>')
 
 def view_buttons(w):
     return (f'<div class="views" role="group" aria-label="Choose a view of {e(w["title"])}">'
-            f'<button type="button" class="view-btn" data-view="painting" aria-pressed="true"><img src="img/t/{w["id"]}.jpg" alt="">The painting</button>'
+            f'<button type="button" class="view-btn" data-view="painting" aria-pressed="true"><img src="img/t/{w["id"]}.jpg" alt="">{'The paintings' if w['id'] in SETS else 'The painting'}</button>'
             f'<button type="button" class="view-btn" data-view="wall" aria-pressed="false"><img src="{room_for(w)["thumb"]}" alt="">On a wall</button></div>')
 
 def gallery_nav(current=''):
@@ -300,7 +329,8 @@ pages['gallery.html'] = page('Gallery · Joan Mullins', f'''<section class="wrap
 gslug = lambda g: re.sub('[^a-z]+', '-', g.lower()).strip('-')
 
 def ask_link(w):
-    return f'<a href="enquire.html#w-{w["id"]}">Ask about this painting</a>'
+    label = 'Ask about these paintings' if w['id'] in SETS else 'Ask about this painting'
+    return f'<a href="enquire.html#w-{w["id"]}">{label}</a>'
 
 def details(w):
     rows = [('Medium', e(medium_short(w))), ('Size', e(size(w))), ('Year', e(w['year'])), ('Inspired by', e(w['place'])),
@@ -310,6 +340,8 @@ def details(w):
 def exhibit(w):
     dl = details(w)
     text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip())
+    if w['id'] in SETS:   # a set of separate sheets: say so plainly, before Joan's words
+        text = f"<p>{SETS[w['id']]['sheets'].capitalize()} individual paintings, each on its own sheet.</p>" + text
     share = (f'<button type="button" class="share-btn" data-url="{BASE}w-{w["id"]}.html" data-title="{e(w["title"])}, by Joan Mullins">'
              f'<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
              f'<path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/></svg><span>Share</span></button>')

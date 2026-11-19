@@ -163,7 +163,7 @@ p { margin: 0; }
 .wall { container-type: inline-size; position: relative; width: min(100%, calc(78vh * var(--rw) / var(--rh))); aspect-ratio: var(--rw) / var(--rh); overflow: hidden; background: #E9E5E0; }
 .wall .room { position: absolute; inset: 0; width: 100%; height: 100%; }
 .wall .hang { position: absolute; box-sizing: border-box; width: calc(var(--tw) * var(--s) * 100cqw / var(--rw)); height: calc(var(--th) * var(--s) * 100cqw / var(--rw));
-  left: calc((var(--cx) - var(--tw) * var(--s) / 2) * 100cqw / var(--rw)); bottom: calc(var(--by) * 100cqw / var(--rw));
+  left: calc((var(--cx) + var(--dx, 0) * var(--s) - var(--tw) * var(--s) / 2) * 100cqw / var(--rw)); bottom: calc(var(--by) * 100cqw / var(--rw));
   border: calc(var(--fw) * var(--s) * 100cqw / var(--rw)) solid transparent; padding: calc(var(--mt) * var(--s) * 100cqw / var(--rw)) calc(var(--mx) * var(--s) * 100cqw / var(--rw)) calc(var(--mb) * var(--s) * 100cqw / var(--rw));
   box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 9px 24px rgba(40,32,25,.16); }
 .wall .hang img { display: block; width: 100%; height: 100%; object-fit: fill; }
@@ -175,6 +175,13 @@ p { margin: 0; }
   box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 9px 24px rgba(40,32,25,.16), inset 1px 2px 4px rgba(60,40,25,.22); }
 .wall .hang.poem img { box-shadow: 0 0 0 calc(1.6 * var(--s) * 100cqw / var(--rw)) #FBFAF7, 0 0 0 calc(1.6 * var(--s) * 100cqw / var(--rw) + 1.5px) #E2DACB; }
 .wall .hang.oak { border-color: #B8925F; border-image: linear-gradient(135deg, #C9A574, #A98352) 1; }
+/* Two wall pictures for a set of sheets: side by side on wider screens, one above the other on a phone */
+.walls2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+@media (max-width: 700px) { .walls2 { grid-template-columns: 1fr; } }
+/* Sets of sheets (SETS in build.py): each sheet in a cream mount and mid-brown wood frame, like the poems */
+.wall .hang.creamwood { border-color: #8A6045; border-image: linear-gradient(135deg, #A57754 0%, #8C603F 45%, #6F4B32 100%) 1; background: #F3EEE4;
+  box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 9px 24px rgba(40,32,25,.16), inset 1px 2px 4px rgba(60,40,25,.22); }
+.wall .hang.creamwood img { box-shadow: 0 0 0 1.5px #E2DACB; }
 /* Joan's own frames (FRAMES in build.py), matched to her photos of 16 Nov 2026 */
 .wall .hang.redwood { border-color: #7E4F3E; border-image: linear-gradient(135deg, #966453 0%, #7E4F3E 45%, #603A2B 100%) 1; }
 .wall .hang.bronze { border-color: #76604A; border-image: linear-gradient(135deg, #8E755C 0%, #77614B 45%, #5C4938 100%) 1; }
