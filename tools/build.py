@@ -60,7 +60,9 @@ SETS = {'128': dict(sheets='four', aspect=0.8, gap=6, pairs=[
 
 def size(w):
     if w['h'] and w['w']:
-        return f"{w['h']} × {w['w']} cm" + (' each' if w['id'] in SETS else '')
+        if w['id'] in SETS:   # same paper, but each painting a little different in size (Joan, 19 Nov 2026)
+            return f"About {w['h']} × {w['w']} cm each"
+        return f"{w['h']} × {w['w']} cm"
     return ''
 
 def price_line(w):
@@ -274,7 +276,7 @@ def set_walls(w, r, style, fw, mx, mt, mb, tw, th, by):
 <img class="room" src="{r["src"]}" alt="" width="{r["rw"]}" height="{r["rh"]}" loading="lazy">
 {hangs}</div>''')
     note = (f"The {st['sheets']} sheets shown in pairs, each in a cream mount and wood frame, which are not included. "
-            f"Each sheet is {w['h']} × {w['w']} cm. {r['where']} The room is an illustration.")
+            f"Each is about {w['h']} × {w['w']} cm. {r['where']} The room is an illustration.")
     return note, '<div class="walls2">' + '\n'.join(walls) + '</div>'
 
 ZOOM = ('<dialog id="zoom" class="zoom" aria-label="Larger picture"><button type="button" class="zoom-close" aria-label="Close the larger picture">'
@@ -341,7 +343,8 @@ def exhibit(w):
     dl = details(w)
     text = ''.join(f'<p>{e(p)}</p>' for p in w['text'].split('\n') if p.strip())
     if w['id'] in SETS:   # a set of separate sheets: say so plainly, before Joan's words
-        text = f"<p>{SETS[w['id']]['sheets'].capitalize()} individual paintings, each on its own sheet.</p>" + text
+        text = (f"<p>{SETS[w['id']]['sheets'].capitalize()} individual paintings, each on its own sheet, shown together here. "
+                "They can be bought as a group or one at a time.</p>") + text
     share = (f'<button type="button" class="share-btn" data-url="{BASE}w-{w["id"]}.html" data-title="{e(w["title"])}, by Joan Mullins">'
              f'<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
              f'<path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/></svg><span>Share</span></button>')
