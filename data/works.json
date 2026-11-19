@@ -107,7 +107,7 @@
    1174,
    1600
   ],
-  "framed": false
+  "framed": true
  },
  {
   "id": "012",
@@ -1339,7 +1339,7 @@
    859,
    1095
   ],
-  "framed": false
+  "framed": true
  },
  {
   "id": "128",
@@ -1356,10 +1356,10 @@
   "status": "available",
   "price": 275,
   "text": "Done in brown ink and water, using a round brush and working quickly from imagination.",
-  "alt": "Two ink and wash studies in sepia of women's heads: one with curly hair and earrings in profile, one in a headscarf looking down.",
+  "alt": "Four ink and wash studies in sepia of women's heads: two curly-haired women in profile on the left, and on the right a woman in a flowered hat and an older woman in a headscarf looking down.",
   "img": [
-   1600,
-   1080
+   1303,
+   1600
   ],
   "framed": false
  },
@@ -2436,8 +2436,8 @@
   "text": "Perhaps the most famous of Shakespeare's sonnets. I copied the roses from life in watercolour and did the calligraphy in ink.",
   "alt": "Illustrated poem: Shakespeare's Sonnet 18, hand-lettered within a border of pink wild roses and leaves.",
   "img": [
-   940,
-   1100
+   1387,
+   1600
   ],
   "framed": false
  },

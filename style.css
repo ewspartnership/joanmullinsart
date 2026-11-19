@@ -175,6 +175,13 @@ p { margin: 0; }
   box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 9px 24px rgba(40,32,25,.16), inset 1px 2px 4px rgba(60,40,25,.22); }
 .wall .hang.poem img { box-shadow: 0 0 0 calc(1.6 * var(--s) * 100cqw / var(--rw)) #FBFAF7, 0 0 0 calc(1.6 * var(--s) * 100cqw / var(--rw) + 1.5px) #E2DACB; }
 .wall .hang.oak { border-color: #B8925F; border-image: linear-gradient(135deg, #C9A574, #A98352) 1; }
+/* Joan's own frames (FRAMES in build.py), matched to her photos of 16 Nov 2026 */
+.wall .hang.redwood { border-color: #7E4F3E; border-image: linear-gradient(135deg, #966453 0%, #7E4F3E 45%, #603A2B 100%) 1; }
+.wall .hang.bronze { border-color: #76604A; border-image: linear-gradient(135deg, #8E755C 0%, #77614B 45%, #5C4938 100%) 1; }
+.wall .hang.bronze img { box-shadow: 0 0 0 calc(0.35 * var(--s) * 100cqw / var(--rw)) #4A3423; }
+.wall .hang.slate { border-color: #4E4F53; border-image: linear-gradient(135deg, #6B6B6F 0%, #505155 50%, #3D3E42 100%) 1; background: #F2EDE3;
+  box-shadow: 0 2px 5px rgba(40,32,25,.28), 0 9px 24px rgba(40,32,25,.16), inset 1px 2px 4px rgba(40,35,30,.2); }
+.wall .hang.slate img { box-shadow: 0 0 0 calc(0.7 * var(--s) * 100cqw / var(--rw)) #F8F6F1, 0 0 0 calc(0.85 * var(--s) * 100cqw / var(--rw)) #2B2622; }
 
 /* Larger picture, shown over the page */
 .zoom { border: 0; padding: 0; margin: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; background: transparent; }

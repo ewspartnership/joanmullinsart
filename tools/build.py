@@ -179,10 +179,22 @@ ROOMS = {
 TINY = 35    # cm: no bigger than this as hung goes above the desk
 SMALL = 45   # cm: no bigger than this as hung (with any mount and frame) goes beside the side table and chair
 
+# Joan's own frames, copied from her photos of them on 16 Nov 2026 (Steph, 19 Nov): used in "On a wall" for works the
+# catalogue records as framed. The website never says a work is framed: Joan doesn't supply frames, and any frame she has
+# put on a painting is for her to discuss by email with a buyer. Widths in cm: fw frame, mx/mt/mb mount (sides, top, bottom).
+FRAMES = {
+    '011': dict(style='redwood', fw=2.7, mx=0, mt=0, mb=0),        # reddish-brown wood (her photo "Still life")
+    '091': dict(style='bronze', fw=3.0, mx=0, mt=0, mb=0),         # wide mottled bronze-brown, dark inner lip (her photo "Frame")
+    '125': dict(style='slate', fw=1.6, mx=7.7, mt=7.9, mb=7.7),    # cream mount, thin dark line and white border, charcoal frame
+}
+
 def hung(w):
     """Style, frame, mount widths and the hung size in cm."""
     paper = 'paper' in w['medium'].lower()
-    if paper:
+    if w.get('framed') and w['id'] in FRAMES:
+        f = FRAMES[w['id']]
+        style, fw, mx, mt, mb = f['style'], f['fw'], f['mx'], f['mt'], f['mb']
+    elif paper:
         if w['gallery'] == 'Illustrated poems':
             # Measured from Joan's own framing of one of her poems (Steph's photo, 10 Nov): about 1.6 cm of the sheet shows
             # round the painting, then about 3.5 cm of mount and a mid-brown wood frame (measured 1.9 cm; drawn at 1.4 cm, which Steph found less heavy). mx/mt/mb include the sheet.
@@ -217,7 +229,8 @@ def min_gap(r):
 def wall_view(w):
     """The painting at true size on a wall, when its size is known: small ones beside a side table, the rest above a cabinet.
     Works on paper are shown mounted: poems in a frame like Joan's own, others in a typical mount and thin black frame (not included unless recorded as framed);
-    oils recorded as framed are shown in a plain oak frame; other oils hang bare."""
+    works recorded as framed are shown in Joan's own frame where FRAMES has it, otherwise oils in a plain oak frame; other oils hang bare.
+    The note never says a work is framed (Steph, 19 Nov 2026)."""
     r = room_for(w)
     if not r:
         return '', ''
@@ -227,10 +240,6 @@ def wall_view(w):
     by = round(r['by'] + raise_cm * r['s'], 1)
     if paper and not w.get('framed'):
         note = f'Shown in a typical mount and frame, which are not included. The painting itself is {size(w)}.'
-    elif paper:
-        note = f'Shown framed. The painting itself is {size(w)}.'
-    elif w.get('framed'):
-        note = f'Shown in its oak frame. The painting itself is {size(w)}.'
     else:
         note = f'Shown at its real size, {size(w)}.'
     return note + ' ' + r['where'] + ' The room is an illustration.', f'''<div class="wall" style="--rw:{r["rw"]};--rh:{r["rh"]};--s:{r["s"]};--cx:{r["cx"]};--by:{r["by"]}">
